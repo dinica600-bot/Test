@@ -53,7 +53,7 @@ export function profileCard(user, member, profile, guildId) {
     )
     .addFields(
       { name: '🆔 User ID (Zone)', value: idLine, inline: true },
-      { name: '🏅 Rank', value: formatRank(profile) ?? '_nesetat_', inline: true },
+      { name: '🏅 Rank', value: formatRank(profile, member?.guild) ?? '_nesetat_', inline: true },
       {
         name: '📊 Winrate',
         value: Number.isFinite(profile.winrate)

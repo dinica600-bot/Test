@@ -6,6 +6,8 @@
  * De la Mythic in sus se merge pe puncte:
  *   0-24 Mythic • 25-49 Mythical Honor • 50-99 Mythical Glory • 100+ Immortal
  */
+import { e } from './emojis.js';
+
 export const RANKS = [
   { key: 'rank_warrior', name: 'Warrior', emoji: '⚔️', divisions: 3, stars: 3, color: 0xa8763e },
   { key: 'rank_elite', name: 'Elite', emoji: '🔰', divisions: 3, stars: 4, color: 0x6baa75 },
@@ -20,6 +22,11 @@ export const RANKS = [
 ];
 
 export const ROMAN = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V' };
+
+/** Cheia emoji-ului personalizat pentru un rank (rank_glory -> glory). */
+export function rankEmojiKey(rank) {
+  return rank?.key?.replace('rank_', '') ?? null;
+}
 
 export function findRank(name) {
   if (!name) return null;
@@ -40,21 +47,26 @@ export function renderStars(stars, max) {
 
 /**
  * Textul afisat pe profil, ex:
- *   "🔥 Legend II  ★★★☆☆"
- *   "👑 Mythical Glory — 63 puncte"
+ *   "<emblema> Legend II  ★★★☆☆"
+ *   "<emblema> Mythical Glory — 63 puncte"
+ *
+ * Daca primeste `guild` si emblemele sunt incarcate cu /decor emoji,
+ * foloseste emblema desenata; altfel ramane emoji-ul unicode.
  */
-export function formatRank(profile) {
+export function formatRank(profile, guild = null) {
   const rank = findRank(profile?.rankTier);
   if (!rank) return null;
 
+  const badge = guild ? e(guild, rankEmojiKey(rank)) || rank.emoji : rank.emoji;
+
   if (rank.points) {
     const points = Number.isFinite(profile.points) ? profile.points : null;
-    return `${rank.emoji} **${rank.name}**${points !== null ? ` — **${points}** puncte` : ''}`;
+    return `${badge} **${rank.name}**${points !== null ? ` — **${points}** puncte` : ''}`;
   }
 
   const division = profile.division ? ` ${ROMAN[profile.division] ?? profile.division}` : '';
   const stars = Number.isFinite(profile.stars) ? `  ${renderStars(profile.stars, rank.stars)}` : '';
-  return `${rank.emoji} **${rank.name}${division}**${stars}`;
+  return `${badge} **${rank.name}${division}**${stars}`;
 }
 
 /** Optiunile pentru comenzile slash. */

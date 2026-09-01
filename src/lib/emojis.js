@@ -11,7 +11,8 @@ import { settings } from './db.js';
 export const FALLBACK = {
   bxd: '🩸', sange: '🩸', diamant: '💎',
   gold: '🥇', exp: '🛡️', mid: '🔮', jungle: '🌲', roam: '🧿',
-  warrior: '⚔️', epic: '💜', legend: '🔥', mythic: '🌌', glory: '👑', immortal: '💫',
+  warrior: '⚔️', elite: '🔰', master: '🎖️', gm: '🏅', epic: '💜',
+  legend: '🔥', mythic: '🌌', honor: '✨', glory: '👑', immortal: '💫',
   win: '🏆', loss: '❌', mvp: '⭐', scrim: '⚔️',
 };
 
@@ -29,6 +30,13 @@ export function e(guild, key) {
   const id = settings.get(guild.id, `emojis.${key}`);
   if (id && guild.emojis.cache.has(id)) return `<:${emojiName(key)}:${id}>`;
   return FALLBACK[key] ?? '';
+}
+
+/** ID-ul brut al emoji-ului, pentru meniuri si butoane (nu textul <:x:id>). */
+export function emojiId(guild, key) {
+  if (!guild) return null;
+  const id = settings.get(guild.id, `emojis.${key}`);
+  return id && guild.emojis.cache.has(id) ? id : null;
 }
 
 export function setEmojiId(guildId, key, id) {

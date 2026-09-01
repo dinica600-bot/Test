@@ -278,7 +278,9 @@ Vrei alt stil? Editezi culorile și textele în `scripts/generate-assets.py`, ru
 
 Discord cere boost-uri pentru ele: **Nivel 2** (7 boost-uri) pentru gradient, **Nivel 3** (14) pentru holografic. Fără boost-uri rolurile primesc culoarea simplă și totul merge normal — când ajungi acolo, rulezi `/setup stiluri` și se aplică peste rolurile existente.
 
-**Emoji personalizate** — 18 emoji generate (marca squad-ului, badge-uri de lane, rank, win/loss/MVP), încărcate cu `/decor emoji`. **Nu cer niciun boost** — orice server are 50 de sloturi gratuite. Botul le folosește automat în embed-uri, iar membrii le pot pune în chat și ca reacții.
+**Emoji personalizate** — 22 emoji generate, încărcate cu `/decor emoji`: marca squad-ului, badge-uri de lane, win/loss/MVP și **10 embleme de rank** desenate în progresia din joc — scut simplu la Warrior, apoi stele, aripi, gemă, flacără, aură și coroană până la Mythical Immortal. Emblemele apar automat pe fișa de jucător (`/profil vezi`) și în meniul de rank din `🎭︱self-roles`.
+
+> Emblemele sunt **desen propriu**, nu iconițele oficiale Moonton — alea sunt protejate de drepturi de autor și nu pot fi redistribuite. **Nu cer niciun boost** — orice server are 50 de sloturi gratuite. Botul le folosește automat în embed-uri, iar membrii le pot pune în chat și ca reacții.
 
 **Community, ecran de bun venit și onboarding** — `/setup comunitate` activează modul Community (gratis), pune ecranul de bun venit cu scurtături spre canalele importante și configurează **onboarding-ul**: la intrarea pe server, noii membri primesc întrebările *„Ce lane joci?"*, *„Ce rank ai?"*, *„Ce notificări vrei?"* și primesc rolurile automat. Tot activarea Community transformă `📢︱anunțuri` în canal de anunțuri, pe care alte servere îl pot urmări.
 

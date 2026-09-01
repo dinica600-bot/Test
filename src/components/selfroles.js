@@ -3,17 +3,22 @@ import { embeds, fail } from '../lib/embeds.js';
 import { SELF_ROLE_GROUPS, ROLES } from '../config/blueprint.js';
 import { getRole } from '../lib/guildMap.js';
 import { COLORS } from '../config/config.js';
+import { emojiId } from '../lib/emojis.js';
 
 export function selfRolePanels(guild) {
   return SELF_ROLE_GROUPS.map((group) => {
     const options = group.roles
       .map((key) => ({ def: ROLES.find((r) => r.key === key), role: getRole(guild, key) }))
       .filter((r) => r.role)
-      .map((r) => ({
-        label: r.def.name.replace(/^\S+\s/, ''),
-        value: r.def.key,
-        emoji: r.def.name.split(' ')[0],
-      }));
+      .map((r) => {
+        // pentru rank-uri folosim emblemele desenate, daca sunt incarcate
+        const custom = group.id === 'rank' ? emojiId(guild, r.def.key.replace('rank_', '')) : null;
+        return {
+          label: r.def.name.replace(/^\S+\s/, ''),
+          value: r.def.key,
+          emoji: custom ? { id: custom } : r.def.name.split(' ')[0],
+        };
+      });
 
     const embed = embeds
       .custom(COLORS.diamond)

@@ -239,17 +239,134 @@ EMOJIS = [
     ('mid',       'badge',   'M', (160, 108, 213), (70, 40, 110)),
     ('jungle',    'badge',   'J', (42, 157, 143), (15, 70, 65)),
     ('roam',      'badge',   'R', (72, 202, 228), (20, 90, 110)),
-    ('warrior',   'badge',   'W', (168, 118, 62), (70, 45, 20)),
-    ('epic',      'badge',   'EP', (199, 125, 255), (80, 40, 120)),
-    ('legend',    'badge',   'LG', (255, 109, 0), (110, 45, 0)),
-    ('mythic',    'badge',   'MY', (255, 32, 110), (110, 10, 45)),
-    ('glory',     'badge',   'GL', (255, 77, 109), (110, 25, 40)),
-    ('immortal',  'badge',   'IM', (247, 37, 133), (95, 15, 55)),
     ('win',       'badge',   'W', (34, 197, 94), (10, 70, 35)),
     ('loss',      'badge',   'L', (239, 68, 68), (90, 20, 20)),
     ('mvp',       'badge',   'MVP', (255, 215, 0), (110, 85, 0)),
     ('scrim',     'badge',   'VS', (193, 18, 31), (70, 8, 14)),
 ]
+
+
+# ---- embleme de rank, in stilul progresiei din joc (desen propriu) ----
+SS = 4  # desenam de 4x mai mare si micsoram, ca sa iasa marginile fine
+
+def poly(d, pts, box, **kw):
+    x, y, w, h = box
+    d.polygon([(x + px * w, y + py * h) for px, py in pts], **kw)
+
+def star(d, cx, cy, r, fill, outline=None, width=0, points=5, inner=0.44):
+    pts = []
+    for i in range(points * 2):
+        ang = math.radians(-90 + i * 180 / points)
+        rad = r if i % 2 == 0 else r * inner
+        pts.append((cx + rad * math.cos(ang), cy + rad * math.sin(ang)))
+    d.polygon(pts, fill=fill, outline=outline, width=width)
+
+def vgradient(size, c1, c2):
+    w, h = size
+    g = Image.new('RGB', (1, 64))
+    for y in range(64):
+        t = y / 63
+        g.putpixel((0, y), tuple(int(c1[i] + (c2[i] - c1[i]) * t) for i in range(3)))
+    return g.resize(size, Image.BICUBIC)
+
+def wing(d, cx, cy, size, direction, color, feathers=3):
+    """Aripa stilizata: cateva pene care se desfasoara lateral."""
+    for i in range(feathers):
+        t = i / max(1, feathers - 1)
+        length = size * (1.12 - 0.20 * t)
+        thick = size * (0.34 - 0.07 * t)
+        y = cy - size * 0.30 + size * 0.34 * t
+        x0 = cx + direction * size * 0.10
+        x1 = cx + direction * length
+        d.polygon([
+            (x0, y - thick * 0.5), (x1, y - thick * 0.16),
+            (x1, y + thick * 0.30), (x0, y + thick * 0.62),
+        ], fill=color)
+
+def crown(d, cx, cy, size, color, outline):
+    pts = [(cx - size, cy + size * 0.42), (cx - size, cy - size * 0.45),
+           (cx - size * 0.5, cy + size * 0.05), (cx, cy - size * 0.68),
+           (cx + size * 0.5, cy + size * 0.05), (cx + size, cy - size * 0.45),
+           (cx + size, cy + size * 0.42)]
+    d.polygon(pts, fill=color, outline=outline, width=max(2, int(size * 0.10)))
+
+SHIELD = [(0.5, 0.0), (0.95, 0.17), (0.95, 0.56), (0.5, 1.0), (0.05, 0.56), (0.05, 0.17)]
+
+def make_rank(key, spec, out_dir, size=128):
+    S = size * SS
+    img = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    c = S / 2
+    c1, c2 = spec['colors']
+    edge = spec['edge']
+
+    # aura pentru rank-urile mari
+    if spec.get('aura'):
+        glow = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+        ImageDraw.Draw(glow).ellipse([S*0.06, S*0.06, S*0.94, S*0.94], fill=edge + (110,))
+        img = Image.alpha_composite(img, glow.filter(ImageFilter.GaussianBlur(S * 0.07)))
+        d = ImageDraw.Draw(img)
+
+    # aripi
+    if spec.get('wings'):
+        for direction in (-1, 1):
+            wing(d, c, c * 0.96, S * 0.50, direction, edge, spec['wings'])
+
+    # scutul, cu gradient prin masca
+    box = (S * 0.235, S * 0.115, S * 0.53, S * 0.70)
+    mask = Image.new('L', (S, S), 0)
+    poly(ImageDraw.Draw(mask), SHIELD, box, fill=255)
+    grad = vgradient((S, S), c1, c2).convert('RGBA')
+    img.paste(grad, (0, 0), mask)
+    d = ImageDraw.Draw(img)
+    poly(d, SHIELD, box, outline=edge, width=int(S * 0.030))
+
+    # semnul din mijloc
+    mx, my = c, S * 0.435
+    mark = spec['mark']
+    if mark == 'star':
+        star(d, mx, my, S * 0.115, edge)
+    elif mark == 'gem':
+        d.polygon([(mx, my - S*0.13), (mx + S*0.10, my), (mx, my + S*0.15), (mx - S*0.10, my)],
+                  fill=edge, outline=(255, 255, 255, 210), width=int(S*0.016))
+    elif mark == 'flame':
+        d.polygon([(mx, my - S*0.16), (mx + S*0.10, my + S*0.02), (mx + S*0.05, my + S*0.14),
+                   (mx - S*0.05, my + S*0.14), (mx - S*0.10, my + S*0.02)], fill=edge)
+        star(d, mx, my + S*0.03, S*0.055, (255, 255, 255, 220))
+    elif mark == 'burst':
+        for i in range(8):
+            a = math.radians(i * 45)
+            d.line([(mx, my), (mx + math.cos(a) * S*0.17, my + math.sin(a) * S*0.17)],
+                   fill=edge, width=int(S*0.026))
+        star(d, mx, my, S*0.095, (255, 255, 255, 235))
+
+    # stelutele de sub scut
+    n = spec.get('stars', 0)
+    if n:
+        span = S * 0.055 * (n - 1)
+        for i in range(n):
+            star(d, c - span + i * S * 0.110, S * 0.845, S * 0.052, edge)
+
+    # coroana
+    if spec.get('crown'):
+        crown(d, c, S * 0.115, S * 0.135, edge, (255, 255, 255, 200))
+
+    img = img.resize((size, size), Image.LANCZOS)
+    img.save(os.path.join(out_dir, f'emoji-{key}.png'), optimize=True)
+    return f'emoji-{key}.png'
+
+RANKS = {
+    'warrior':  dict(colors=((150, 105, 60), (92, 60, 30)),  edge=(214, 168, 106), mark='star',  stars=1),
+    'elite':    dict(colors=((96, 150, 110), (44, 88, 60)),  edge=(150, 226, 170), mark='star',  stars=2),
+    'master':   dict(colors=((70, 130, 190), (30, 70, 120)), edge=(140, 205, 250), mark='star',  stars=3),
+    'gm':       dict(colors=((110, 95, 200), (55, 42, 120)), edge=(178, 165, 255), mark='gem',   stars=4, wings=2),
+    'epic':     dict(colors=((160, 85, 210), (85, 35, 125)), edge=(215, 155, 255), mark='gem',   stars=5, wings=3),
+    'legend':   dict(colors=((214, 110, 30), (130, 50, 10)), edge=(255, 190, 90),  mark='flame', stars=5, wings=3),
+    'mythic':   dict(colors=((190, 40, 110), (95, 15, 60)),  edge=(255, 110, 180), mark='burst', wings=3, aura=True),
+    'honor':    dict(colors=((205, 140, 40), (120, 70, 12)), edge=(255, 210, 110), mark='burst', wings=3, aura=True, crown=True),
+    'glory':    dict(colors=((205, 55, 85), (110, 20, 40)),  edge=(255, 205, 120), mark='burst', wings=3, aura=True, crown=True),
+    'immortal': dict(colors=((175, 45, 175), (70, 20, 120)), edge=(255, 130, 235), mark='burst', wings=3, aura=True, crown=True),
+}
 
 
 def make_emoji(key, kind, label, c1, c2, size=128):
@@ -290,6 +407,7 @@ if __name__ == '__main__':
         print(f'  {name:26s} {os.path.getsize(path) // 1024:4d} KB')
 
     emojis = [make_emoji(*e) for e in EMOJIS]
+    emojis += [make_rank(k, v, os.path.join(OUT, 'emoji')) for k, v in RANKS.items()]
     total = sum(os.path.getsize(os.path.join(OUT, 'emoji', n)) for n in emojis)
     print(f'  emoji/ ({len(emojis)} fisiere)      {total // 1024:4d} KB')
     print(f'\n{len(made)} imagini + {len(emojis)} emoji in assets/')
