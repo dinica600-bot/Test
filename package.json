@@ -1,0 +1,29 @@
+{
+  "name": "blood-diamonds-bot",
+  "version": "1.0.0",
+  "description": "Bot + server builder complet pentru squad-ul de Mobile Legends Blood×Diamonds",
+  "main": "src/index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "deploy": "node src/deploy-commands.js",
+    "check": "node --check src/index.js"
+  },
+  "keywords": [
+    "discord",
+    "discord-bot",
+    "mobile-legends",
+    "mlbb",
+    "esports",
+    "blood-diamonds"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5"
+  }
+}
