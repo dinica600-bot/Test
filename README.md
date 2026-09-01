@@ -142,6 +142,7 @@ mută rolul botului sus de tot, ia-ți rolul `🩸 Owner`, verifică-te în `✅
 | **Recrutare** | Formular (modal) cu 5 întrebări → aplicația ajunge în `📥︱aplicații` cu butoane **Acceptă / Academy / Respinge**, care dau rolul și dau DM candidatului. |
 | **Scrim** | `/scrim creeaza` postează un anunț cu butoane **Joc / Rezervă / Nu pot** — line-up-ul se completează singur, 5 sloturi + rezerve. |
 | **Draft simulator** | `/draft` — ban/pick în format MPL (6 ban, 6 pick, 4 ban, 4 pick), cu buton de **Înapoi** și **Reset**. |
+| **Profil MLBB** | `/profil conecteaza` verifică User ID + Zone ID prin serviciul folosit de site-urile de top-up și îți întoarce **numele real din joc** → badge `✅ ID verificat` (îți pune și numele ăla pe server). Rank, stele și winrate se declară cu `/profil stats` și se confirmă de staff pe bază de screenshot → badge `🛡️ Stats confirmate`. Rolul de rank se dă automat. |
 | **Bază de eroi** | 125 de eroi cu rol, lane, dificultate și counter-e. `/hero`, `/counter`, `/build`, `/random-hero`, `/comp`. |
 | **Nivele & XP** | 15–25 XP pe mesaj (cooldown 1 min) + 5 XP pe minut de voice. Roluri automate la Lv. 5/10/20/35/50, anunț în `⭐︱level-up`. |
 | **Moderare** | ban, kick, timeout, warn cu **escaladare automată** (3 warn → timeout 1h, 5 warn → kick), purge, lock, slowmode, istoric. |
@@ -171,7 +172,10 @@ mută rolul botului sus de tot, ia-ți rolul `🩸 Owner`, verifică-te în `✅
 | `/random-hero [rol] [lane]` | Îți alege botul eroul. Fără reroll 😈 |
 | `/comp [meta]` | Generează o compoziție completă, câte un erou pe lane. |
 | `/draft` | Simulator de ban/pick în format MPL, cu butoane. |
-| `/profil seteaza \| vezi` | IGN, ID de joc, rank, lane, main, winrate. |
+| `/profil conecteaza` | **Verifică ID-ul real de MLBB** și îți ia numele din joc. `/profile` merge la fel. |
+| `/profil stats` | Rank + diviziune + stele (sau puncte de Mythic), winrate, meciuri, main-uri. |
+| `/profil dovada` | Trimiți screenshot → staff-ul îți confirmă stats-urile cu un buton. |
+| `/profil vezi` | Fișa de jucător completă, cu badge-uri. |
 | `/lfg` | Caută coechipieri — party cu butoane, până la 5 locuri. |
 
 </details>
@@ -235,6 +239,40 @@ mută rolul botului sus de tot, ia-ți rolul `🩸 Owner`, verifică-te în `✅
 | `/vc nume \| limita \| blocheaza \| deblocheaza \| da-afara \| invita` | Controlul canalului tău temporar. |
 
 </details>
+
+---
+
+## 🎮 Cum funcționează profilul de Mobile Legends
+
+**Ce se poate verifica automat și ce nu — pe scurt:**
+
+| | Se poate? | Cum |
+|---|---|---|
+| Există contul? Care e numele real din joc? | ✅ **Da, automat** | User ID + Zone ID sunt trimise la serviciul de validare folosit de site-urile de top-up (Codashop & co.), care întoarce nickname-ul. Exact mecanismul folosit de toate boturile MLBB serioase. |
+| Rank, stele, winrate, meciuri, istoric | ❌ **Nu automat** | Moonton **nu are API public** pentru statistici de jucător. Botul de pe serverul oficial (Halpo) are acces special de partener, pe care un bot terț nu-l poate obține. |
+
+De aceea fluxul e în doi pași — și tot iese o fișă în care poți avea încredere:
+
+```
+1. /profil conecteaza  user_id:1114917746  zone_id:2019
+   → botul confirmă contul, îți ia numele din joc și îți dă  ✅ ID verificat
+
+2. /profil stats  rank:Mythical Glory  puncte:63  winrate:62.4  meciuri:1248
+   → primești automat rolul 👑 Mythical Glory
+
+3. /profil dovada  screenshot:<poza din joc>
+   → staff-ul apasă „Confirm" și primești  🛡️ Stats confirmate
+```
+
+Rank-ul e modelat exact ca în joc: Warrior → Legend au **diviziuni și stele**
+(`🔥 Legend II ★★★☆☆`), iar de la Mythic în sus se merge pe **puncte**, din care
+botul deduce singur tier-ul corect (0-24 Mythic, 25-49 Honor, 50-99 Glory, 100+ Immortal).
+
+> **Dacă serviciul de verificare cade** (sunt endpoint-uri neoficiale, se mai schimbă),
+> nu trebuie să modifici cod: pui alt URL în `.env` la `MLBB_NICKNAME_API`, cu
+> `{id}` și `{server}` ca variabile. Botul caută singur numele în răspuns.
+> Iar dacă apare vreodată un serviciu care dă și statistici, îl pui la `MLBB_STATS_API`
+> și sunt preluate automat la conectare.
 
 ---
 

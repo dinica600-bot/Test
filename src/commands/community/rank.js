@@ -31,7 +31,7 @@ export default {
             `${progressBar(data.xp, need, 16)}\n**${data.xp} / ${need} XP** până la nivelul ${data.level + 1}`,
           )
           .addFields(
-            { name: '🏆 Poziție', value: `**#${position.position}** din ${position.of}`, inline: true },
+            { name: '🏆 Poziție', value: position.of ? `**#${position.position}** din ${position.of}` : 'neclasat', inline: true },
             { name: '💬 Mesaje', value: `**${data.messages ?? 0}**`, inline: true },
             { name: '🔊 Voice', value: `**${Math.round((data.voice ?? 0) / 60)}h ${(data.voice ?? 0) % 60}m**`, inline: true },
             ...(next ? [{ name: '🎯 Următoarea recompensă', value: `**${next.name}** la nivelul ${next.level}` }] : []),

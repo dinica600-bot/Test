@@ -13,6 +13,7 @@ import * as giveaway from './giveaway.js';
 import * as poll from './poll.js';
 import * as suggestion from './suggestion.js';
 import * as draft from './draft.js';
+import { handleProfileVerify } from './profileVerify.js';
 
 export async function handleComponent(interaction) {
   const [namespace, action] = interaction.customId.split(':');
@@ -52,6 +53,9 @@ export async function handleComponent(interaction) {
 
       case 'suggest':
         return await suggestion.handleSuggestion(interaction);
+
+      case 'pverify':
+        return await handleProfileVerify(interaction);
 
       case 'draft':
         if (action === 'modal') return await draft.submitDraftHero(interaction);
