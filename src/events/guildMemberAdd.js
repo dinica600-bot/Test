@@ -4,6 +4,7 @@ import { getChannel, getRole } from '../lib/guildMap.js';
 import { settings } from '../lib/db.js';
 import { log } from '../lib/logger.js';
 import { COLORS, config } from '../config/config.js';
+import { withBanner } from '../lib/assets.js';
 
 export default {
   name: Events.GuildMemberAdd,
@@ -51,10 +52,12 @@ export default {
           .setURL(rules ? `https://discord.com/channels/${guild.id}/${rules.id}` : 'https://discord.com'),
       );
 
+      const files = withBanner(embed, 'welcome.png');
       await welcome.send({
         content: `${member}`,
         embeds: [embed],
         components: rules ? [row] : [],
+        files,
       }).catch(() => {});
     }
 

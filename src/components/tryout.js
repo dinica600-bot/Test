@@ -8,6 +8,7 @@ import { getChannel, getRole } from '../lib/guildMap.js';
 import { isStaff } from '../lib/permissions.js';
 import { db } from '../lib/db.js';
 import { COLORS, config } from '../config/config.js';
+import { withBanner } from '../lib/assets.js';
 
 export function tryoutPanel() {
   const embed = embeds
@@ -31,7 +32,8 @@ export function tryoutPanel() {
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder().setCustomId('tryout:apply').setLabel('Completează formularul').setEmoji('📝').setStyle(ButtonStyle.Success),
   );
-  return { embeds: [embed], components: [row] };
+  const files = withBanner(embed, 'banner-academy.png');
+  return { embeds: [embed], components: [row], files };
 }
 
 export function tryoutModal() {

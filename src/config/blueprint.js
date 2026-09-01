@@ -15,17 +15,17 @@
 export const ROLES = [
   // ---------- STAFF ----------
   {
-    key: 'owner', name: '🩸 Owner', color: 0x8b0000, hoist: true, mentionable: false,
+    key: 'owner', gradient: null, holographic: true, name: '🩸 Owner', color: 0x8b0000, hoist: true, mentionable: false,
     perms: ['Administrator'], group: 'staff',
     desc: 'Fondatorul squad-ului. Control total.',
   },
   {
-    key: 'coowner', name: '💎 Co-Owner', color: 0x38bdf8, hoist: true, mentionable: false,
+    key: 'coowner', gradient: [0x38bdf8, 0xa78bfa], name: '💎 Co-Owner', color: 0x38bdf8, hoist: true, mentionable: false,
     perms: ['Administrator'], group: 'staff',
     desc: 'Mana dreapta a owner-ului.',
   },
   {
-    key: 'admin', name: '⚔️ Admin', color: 0xe01e37, hoist: true, mentionable: true, group: 'staff',
+    key: 'admin', gradient: [0xe01e37, 0xff8c42], name: '⚔️ Admin', color: 0xe01e37, hoist: true, mentionable: true, group: 'staff',
     perms: [
       'ManageGuild', 'ManageChannels', 'ManageRoles', 'ManageMessages', 'ManageNicknames',
       'ManageEvents', 'KickMembers', 'BanMembers', 'ModerateMembers', 'MentionEveryone',
@@ -34,7 +34,7 @@ export const ROLES = [
     desc: 'Administreaza serverul si staff-ul.',
   },
   {
-    key: 'mod', name: '🛡️ Moderator', color: 0xff6b6b, hoist: true, mentionable: true, group: 'staff',
+    key: 'mod', gradient: [0xff6b6b, 0xffd166], name: '🛡️ Moderator', color: 0xff6b6b, hoist: true, mentionable: true, group: 'staff',
     perms: [
       'ManageMessages', 'ManageNicknames', 'KickMembers', 'ModerateMembers',
       'MoveMembers', 'MuteMembers', 'DeafenMembers', 'ViewAuditLog',
@@ -42,27 +42,27 @@ export const ROLES = [
     desc: 'Tine ordinea in chat si in voice.',
   },
   {
-    key: 'coach', name: '🎯 Coach / Analyst', color: 0xf4a261, hoist: true, mentionable: true, group: 'staff',
+    key: 'coach', gradient: [0xf4a261, 0xe76f51], name: '🎯 Coach / Analyst', color: 0xf4a261, hoist: true, mentionable: true, group: 'staff',
     perms: ['ManageEvents', 'MuteMembers', 'MoveMembers', 'ManageMessages'],
     desc: 'Face draft-ul, VOD review si strategia.',
   },
   {
-    key: 'creator', name: '🎥 Content Creator', color: 0x9b5de5, hoist: true, mentionable: true, group: 'staff',
+    key: 'creator', gradient: [0x9b5de5, 0xf72585], name: '🎥 Content Creator', color: 0x9b5de5, hoist: true, mentionable: true, group: 'staff',
     perms: ['EmbedLinks', 'AttachFiles', 'Stream', 'PrioritySpeaker'],
     desc: 'Streameri / editori care fac content pentru squad.',
   },
 
   // ---------- ECHIPA ----------
   {
-    key: 'roster', name: '🏆 Roster Principal', color: 0xffd700, hoist: true, mentionable: true, group: 'team',
+    key: 'roster', gradient: [0xffd700, 0xff8c00], name: '🏆 Roster Principal', color: 0xffd700, hoist: true, mentionable: true, group: 'team',
     perms: [], desc: 'Cei 5 titulari care joaca oficialele.',
   },
   {
-    key: 'sub', name: '🔁 Rezervă', color: 0xc0c0c0, hoist: true, mentionable: true, group: 'team',
+    key: 'sub', gradient: [0xe2e8f0, 0x94a3b8], name: '🔁 Rezervă', color: 0xc0c0c0, hoist: true, mentionable: true, group: 'team',
     perms: [], desc: 'Substitute — intra cand lipseste un titular.',
   },
   {
-    key: 'academy', name: '🎓 Academy', color: 0x4cc9f0, hoist: true, mentionable: true, group: 'team',
+    key: 'academy', gradient: [0x4cc9f0, 0x4361ee], name: '🎓 Academy', color: 0x4cc9f0, hoist: true, mentionable: true, group: 'team',
     perms: [], desc: 'Lotul de perspectiva, se antreneaza pentru roster.',
   },
   {
@@ -80,7 +80,7 @@ export const ROLES = [
     perms: [], desc: 'Rolul primit dupa verificare. Deschide serverul.',
   },
   {
-    key: 'booster', name: '🚀 Server Booster', color: 0xf47fff, hoist: true, mentionable: false, group: 'community',
+    key: 'booster', gradient: [0xf47fff, 0x9b5de5], name: '🚀 Server Booster', color: 0xf47fff, hoist: true, mentionable: false, group: 'community',
     perms: [], desc: 'Multumim pentru boost! (se da manual sau prin Discord)',
   },
   {
@@ -108,8 +108,8 @@ export const ROLES = [
   { key: 'rank_legend', name: '🔥 Legend', color: 0xff6d00, hoist: false, mentionable: false, group: 'rank', perms: [] },
   { key: 'rank_mythic', name: '🌌 Mythic', color: 0xff206e, hoist: false, mentionable: false, group: 'rank', perms: [] },
   { key: 'rank_honor', name: '✨ Mythical Honor', color: 0xffb703, hoist: false, mentionable: false, group: 'rank', perms: [] },
-  { key: 'rank_glory', name: '👑 Mythical Glory', color: 0xff4d6d, hoist: false, mentionable: false, group: 'rank', perms: [] },
-  { key: 'rank_immortal', name: '💫 Mythical Immortal', color: 0xf72585, hoist: false, mentionable: false, group: 'rank', perms: [] },
+  { key: 'rank_glory', gradient: [0xff4d6d, 0xffd700], name: '👑 Mythical Glory', color: 0xff4d6d, hoist: false, mentionable: false, group: 'rank', perms: [] },
+  { key: 'rank_immortal', gradient: [0xf72585, 0x7209b7], name: '💫 Mythical Immortal', color: 0xf72585, hoist: false, mentionable: false, group: 'rank', perms: [] },
 
   // ---------- PING / NOTIFICARI (self-assign) ----------
   { key: 'ping_announce', name: '📢 Anunțuri', color: 0x94a3b8, hoist: false, mentionable: true, group: 'ping', perms: [] },
@@ -124,8 +124,17 @@ export const ROLES = [
   { key: 'lvl_10', name: '⭐ Lv.10 — Activ', color: 0x00b4d8, hoist: false, mentionable: false, group: 'level', level: 10, perms: [] },
   { key: 'lvl_20', name: '🌟 Lv.20 — Veteran', color: 0x7209b7, hoist: false, mentionable: false, group: 'level', level: 20, perms: [] },
   { key: 'lvl_35', name: '💫 Lv.35 — Elite Member', color: 0xf72585, hoist: false, mentionable: false, group: 'level', level: 35, perms: [] },
-  { key: 'lvl_50', name: '👑 Lv.50 — Legendă BxD', color: 0xffd700, hoist: true, mentionable: false, group: 'level', level: 50, perms: [] },
+  { key: 'lvl_50', gradient: [0xffd700, 0xff006e], name: '👑 Lv.50 — Legendă BxD', color: 0xffd700, hoist: true, mentionable: false, group: 'level', level: 50, perms: [] },
 ];
+
+/**
+ * NOTA despre `gradient` si `holographic`:
+ * sunt "Enhanced Role Styles" — numele membrului se coloreaza in degrade
+ * (2 culori) sau capata un luciu animat. Discord le cere boost-uri pe server:
+ * Nivel 2 pentru gradient, Nivel 3 pentru holografic. Daca nu le ai, rolul
+ * primeste culoarea simpla si totul merge la fel. Cand ajungi la boost-uri,
+ * rulezi /setup stiluri si se aplica peste rolurile existente.
+ */
 
 /** Grupurile de roluri care se pot lua singur din #self-roles. */
 export const SELF_ROLE_GROUPS = [

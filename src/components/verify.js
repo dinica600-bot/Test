@@ -4,6 +4,7 @@ import { getRole } from '../lib/guildMap.js';
 import { RULES } from '../config/blueprint.js';
 import { COLORS, config } from '../config/config.js';
 import { log } from '../lib/logger.js';
+import { withBanner } from '../lib/assets.js';
 
 export function verifyPanel() {
   const embed = embeds
@@ -23,16 +24,25 @@ export function verifyPanel() {
     new ButtonBuilder().setCustomId('verify:accept').setLabel('Accept regulile').setEmoji('🩸').setStyle(ButtonStyle.Success),
     new ButtonBuilder().setCustomId('verify:rules').setLabel('Vezi regulile').setEmoji('📜').setStyle(ButtonStyle.Secondary),
   );
-  return { embeds: [embed], components: [row] };
+  const files = withBanner(embed, 'banner-portal.png');
+  return { embeds: [embed], components: [row], files };
 }
 
 export function rulesEmbed() {
-  return embeds
+  const embed = embeds
     .custom(COLORS.primary)
     .setTitle('📜 Regulile serverului Blood×Diamonds')
     .setDescription('Sunt simple. Cine nu le respecta pleaca — fara discutii lungi.')
     .addFields(RULES.map((r) => ({ name: `${r.emoji} ${r.title}`, value: r.text })))
     .setFooter({ text: 'Regulile se aplica si in voice, si in DM-uri intre membri.' });
+  return embed;
+}
+
+/** Regulile impreuna cu banerul, gata de trimis. */
+export function rulesMessage() {
+  const embed = rulesEmbed();
+  const files = withBanner(embed, 'banner-portal.png');
+  return { embeds: [embed], files };
 }
 
 export async function handleVerify(interaction) {

@@ -7,7 +7,8 @@ import { setRoleId, setChannelId, getChannel, getRole } from '../../lib/guildMap
 import { settings } from '../../lib/db.js';
 import { console_ } from '../../lib/logger.js';
 import { COLORS, config } from '../../config/config.js';
-import { verifyPanel, rulesEmbed } from '../../components/verify.js';
+import { verifyPanel, rulesMessage } from '../../components/verify.js';
+import { applyRoleStyle, countStyled } from '../../lib/roleStyles.js';
 import { selfRolePanels } from '../../components/selfroles.js';
 import { ticketPanel } from '../../components/tickets.js';
 import { tryoutPanel } from '../../components/tryout.js';
@@ -111,6 +112,10 @@ async function createRoles(guild, report) {
     } else {
       report.rolesExisting += 1;
     }
+
+    // nume cu gradient / holografic (cere boost-uri pe server)
+    if (await applyRoleStyle(role, def)) report.styled += 1;
+
     map.set(def.key, role.id);
     setRoleId(guild.id, def.key, role.id);
   }
@@ -206,7 +211,10 @@ async function postPanels(guild, report) {
     try {
       const existing = await channel.messages.fetch({ limit: 20 }).catch(() => null);
       const mine = existing?.find((m) => m.author.id === guild.client.user.id && m.components.length);
-      if (mine) { await mine.edit(payload); return; }
+      if (mine) {
+        if (payload.files?.length) await mine.delete().catch(() => {});
+        else { await mine.edit(payload); return; }
+      }
       await channel.send(payload);
       report.panels += 1;
     } catch (err) {
@@ -218,8 +226,10 @@ async function postPanels(guild, report) {
   if (rules?.isTextBased()) {
     const existing = await rules.messages.fetch({ limit: 10 }).catch(() => null);
     const mine = existing?.find((m) => m.author.id === guild.client.user.id);
-    if (mine) await mine.edit({ embeds: [rulesEmbed()] }).catch(() => {});
-    else { await rules.send({ embeds: [rulesEmbed()] }).catch(() => {}); report.panels += 1; }
+    // mesajele cu imagine atasata nu se pot edita, asa ca il rescriem
+    if (mine) await mine.delete().catch(() => {});
+    await rules.send(rulesMessage()).catch(() => {});
+    report.panels += 1;
   }
 
   await send('verify', verifyPanel());
@@ -255,6 +265,9 @@ export default {
     .addSubcommand((s) => s
       .setName('logs')
       .setDescription('Reconectează canalele de log la bot'))
+    .addSubcommand((s) => s
+      .setName('stiluri')
+      .setDescription('Aplică nume cu gradient și holografice pe rolurile de staff (cere boost-uri)'))
     .addSubcommand((s) => s
       .setName('status')
       .setDescription('Arată ce lipsește față de blueprint')),
@@ -298,8 +311,42 @@ export default {
     await interaction.deferReply();
     const report = {
       rolesCreated: 0, rolesExisting: 0, categoriesCreated: 0,
-      channelsCreated: 0, channelsExisting: 0, panels: 0, errors: [],
+      channelsCreated: 0, channelsExisting: 0, panels: 0, styled: 0, errors: [],
     };
+
+    if (sub === 'stiluri') {
+      const styled = [];
+      const failed = [];
+      for (const def of ROLES.filter((r) => r.gradient || r.holographic)) {
+        const role = getRole(guild, def.key);
+        if (!role) continue;
+        const applied = await applyRoleStyle(role, def);
+        if (applied) styled.push(`${role} — ${applied === 'holographic' ? '✨ holografic' : '🌈 gradient'}`);
+        else failed.push(role.name);
+      }
+
+      const embed = embeds
+        .custom(styled.length ? COLORS.success : COLORS.warning)
+        .setTitle('🎨 Stiluri de rol')
+        .setDescription(
+          styled.length
+            ? `Am stilizat **${styled.length}** roluri:\n\n${styled.join('\n')}`
+            : 'N-am putut aplica niciun stil.',
+        );
+
+      if (failed.length) {
+        embed.addFields({
+          name: `⚠️ N-au mers (${failed.length})`,
+          value:
+            'Discord cere boost-uri pe server pentru stilurile astea:\n' +
+            '• **Nivel 2** (7 boost-uri) → nume cu gradient\n' +
+            '• **Nivel 3** (14 boost-uri) → nume holografice\n\n' +
+            'Rolurile au ramas cu culoarea simpla si totul functioneaza normal. ' +
+            'Cand ajungi la boost-uri, rulezi din nou `/setup stiluri`.',
+        });
+      }
+      return interaction.editReply({ embeds: [embed] });
+    }
 
     if (sub === 'logs') {
       const mapped = mapLogs(guild);
@@ -347,13 +394,20 @@ export default {
         { name: '📁 Categorii', value: `create: **${report.categoriesCreated}**`, inline: true },
         { name: '💬 Canale', value: `create: **${report.channelsCreated}**\nexistente: **${report.channelsExisting}**`, inline: true },
         {
+          name: '🎨 Stiluri de nume',
+          value: report.styled
+            ? `**${report.styled}/${countStyled(ROLES)}** roluri au nume cu gradient sau holografic`
+            : `0/${countStyled(ROLES)} — cer boost-uri pe server (Nivel 2 pentru gradient, 3 pentru holografic). Ruleaza \`/setup stiluri\` cand le ai.`,
+        },
+        {
           name: '✅ Ce faci acum',
           value:
             '`1.` Muta rolul botului **deasupra** tuturor rolurilor create.\n' +
             '`2.` Da-ti singur rolul 🩸 Owner.\n' +
             '`3.` Verifica-te in `✅︱verificare` ca sa testezi fluxul.\n' +
-            '`4.` Ruleaza `/config vezi` ca sa reglezi automod si nivele.\n' +
-            '`5.` Invita membrii — au tot ce le trebuie in `👋︱bun-venit`.',
+            '`4.` Ruleaza `/decor tot` — pune iconul serverului si banerele pe canale.\n' +
+            '`5.` Ruleaza `/config vezi` ca sa reglezi automod si nivele.\n' +
+            '`6.` Invita membrii — au tot ce le trebuie in `👋︱bun-venit`.',
         },
       );
 

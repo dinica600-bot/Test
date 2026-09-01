@@ -9,6 +9,7 @@ import { STAFF_KEYS } from '../config/blueprint.js';
 import { isStaff } from '../lib/permissions.js';
 import { log } from '../lib/logger.js';
 import { COLORS, config } from '../config/config.js';
+import { withBanner } from '../lib/assets.js';
 
 export const TICKET_TYPES = {
   support: { label: 'Ajutor general', emoji: '❓', desc: 'Ai o intrebare sau o problema pe server.' },
@@ -43,7 +44,8 @@ export function ticketPanel() {
       })),
     );
 
-  return { embeds: [embed], components: [new ActionRowBuilder().addComponents(menu)] };
+  const files = withBanner(embed, 'banner-support.png');
+  return { embeds: [embed], components: [new ActionRowBuilder().addComponents(menu)], files };
 }
 
 function staffRoles(guild) {

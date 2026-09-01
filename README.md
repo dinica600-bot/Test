@@ -245,6 +245,43 @@ mută rolul botului sus de tot, ia-ți rolul `🩸 Owner`, verifică-te în `✅
 
 ---
 
+## ✨ Partea vizuală
+
+Serverul nu arată ca un server gol cu canale text — vine cu un pachet vizual complet.
+
+**Imagini generate** (în `assets/`, făcute cu `scripts/generate-assets.py`):
+
+| Imagine | Unde apare |
+|---|---|
+| `icon.png` | iconul serverului **și** poza de profil a botului |
+| `welcome.png` | banner în `👋︱bun-venit` + pe mesajul primit de fiecare membru nou |
+| 8 banere de categorie | header în `📢︱anunțuri`, `💬︱general`, `🎯︱hero-tips`, `📅︱program-scrim`, `📚︱antrenamente`, `❓︱faq`, `💼︱staff-chat`, `🎮︱caut-echipă` |
+
+Le pui pe toate cu o comandă:
+```
+/decor tot
+```
+Vrei alt stil? Editezi culorile și textele în `scripts/generate-assets.py`, rulezi `python3 scripts/generate-assets.py` și dai `/decor banere` din nou.
+
+**Panourile au imagini** — verificarea, regulile, ticketele și recrutarea vin cu banner propriu, nu doar text.
+
+**Nume cu gradient și holografice** (Enhanced Role Styles):
+
+| Rol | Stil |
+|---|---|
+| 🩸 Owner | ✨ holografic (luciu animat) |
+| 💎 Co-Owner | albastru → mov |
+| ⚔️ Admin | roșu → portocaliu |
+| 🛡️ Moderator | coral → auriu |
+| 🏆 Roster Principal | auriu → portocaliu |
+| 👑 Mythical Glory, 💫 Immortal, 👑 Lv.50 | gradient propriu |
+
+Discord cere boost-uri pentru ele: **Nivel 2** (7 boost-uri) pentru gradient, **Nivel 3** (14) pentru holografic. Fără boost-uri rolurile primesc culoarea simplă și totul merge normal — când ajungi acolo, rulezi `/setup stiluri` și se aplică peste rolurile existente.
+
+**Conținut zilnic** — în fiecare zi botul postează singur în `🎯︱hero-tips` **eroul zilei** (rol, lane, counter-e, primii itemi) plus un sfat de joc, ca serverul să aibă viață și când nu scrie nimeni.
+
+---
+
 ## 🎮 Cum funcționează profilul de Mobile Legends
 
 **Ce se poate verifica automat și ce nu — pe scurt:**

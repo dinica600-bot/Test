@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, MessageFlags } from 'discord.js';
 import { embeds } from '../../lib/embeds.js';
-import { verifyPanel, rulesEmbed } from '../../components/verify.js';
+import { verifyPanel, rulesMessage } from '../../components/verify.js';
 import { selfRolePanels } from '../../components/selfroles.js';
 import { ticketPanel } from '../../components/tickets.js';
 import { tryoutPanel } from '../../components/tryout.js';
@@ -35,7 +35,7 @@ export default {
 
     const payloads = {
       verify: [verifyPanel()],
-      rules: [{ embeds: [rulesEmbed()] }],
+      rules: [rulesMessage()],
       roles: selfRolePanels(interaction.guild),
       ticket: [ticketPanel()],
       tryout: [tryoutPanel()],
