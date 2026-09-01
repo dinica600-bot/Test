@@ -71,6 +71,16 @@ export default {
     try {
       await command.execute(interaction, client);
     } catch (err) {
+      // 10062 = interactiunea a expirat: Discord da 3 secunde ca sa confirmi,
+      // iar telefonul/serverul n-a apucat. Nu se mai poate raspunde la ea.
+      if (err.code === 10062) {
+        console_.warn(
+          `/${interaction.commandName}: interactiunea a expirat (raspuns mai lent de 3s). ` +
+          'De obicei e din cauza conexiunii sau a telefonului adormit — da comanda din nou.',
+        );
+        return;
+      }
+
       console_.error(`Comanda /${interaction.commandName}:`, err);
       const payload = {
         embeds: [embeds.error('Ceva a crapat la comanda asta. Staff-ul a fost anuntat.')],

@@ -66,6 +66,10 @@ export async function handleComponent(interaction) {
     }
     return null;
   } catch (err) {
+    if (err.code === 10062) {
+      console_.warn(`${interaction.customId}: interactiunea a expirat (raspuns mai lent de 3s).`);
+      return null;
+    }
     console_.error(`Eroare la componenta ${interaction.customId}:`, err);
     if (!interaction.replied && !interaction.deferred) {
       return fail(interaction, 'A aparut o eroare. Incearca din nou sau anunta staff-ul.').catch(() => {});
