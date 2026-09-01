@@ -5,6 +5,7 @@ import { startGiveawayLoop } from '../components/giveaway.js';
 import { updateStats } from '../lib/stats.js';
 import { startBirthdayLoop } from '../lib/birthdays.js';
 import { startDailyLoop } from '../lib/daily.js';
+import { settings } from '../lib/db.js';
 
 export default {
   name: Events.ClientReady,
@@ -24,6 +25,9 @@ export default {
       client.user.setActivity(activities[i % activities.length]);
       i += 1;
     }, 60_000).unref?.();
+
+    // citim setarile acum, ca prima comanda sa nu astepte dupa disc
+    for (const guild of client.guilds.cache.values()) settings.all(guild.id);
 
     startGiveawayLoop(client);
     startBirthdayLoop(client);

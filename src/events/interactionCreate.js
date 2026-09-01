@@ -38,14 +38,16 @@ export default {
       });
     }
 
-    // --- verificari de acces ---
+    // --- verificari de acces (calculam o singura data, nu la fiecare pas) ---
+    const staff = isStaff(interaction.member);
+
     if (command.ownerOnly && !isOwner(interaction.member)) {
       return interaction.reply({
         embeds: [embeds.error('Comanda asta e doar pentru owner-ul squad-ului.')],
         flags: MessageFlags.Ephemeral,
       });
     }
-    if (command.staffOnly && !isStaff(interaction.member)) {
+    if (command.staffOnly && !staff) {
       return interaction.reply({
         embeds: [embeds.error('Comanda asta e doar pentru staff.')],
         flags: MessageFlags.Ephemeral,
@@ -57,7 +59,7 @@ export default {
     if (!client.cooldowns.has(command.data.name)) client.cooldowns.set(command.data.name, new Collection());
     const timestamps = client.cooldowns.get(command.data.name);
     const last = timestamps.get(interaction.user.id);
-    if (last && Date.now() < last + cooldown && !isStaff(interaction.member)) {
+    if (last && Date.now() < last + cooldown && !staff) {
       const left = ((last + cooldown - Date.now()) / 1000).toFixed(1);
       return interaction.reply({
         embeds: [embeds.warn(`Mai asteapta **${left}s** inainte sa folosesti \`/${command.data.name}\` din nou.`)],
