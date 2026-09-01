@@ -33,15 +33,18 @@ https://discord.com/api/oauth2/authorize?client_id=APPLICATION_ID&permissions=8&
 > `permissions=8` = Administrator. E necesar ca botul să poată **crea canale, roluri
 > și permisiuni**. După setup poți reduce permisiunile dacă vrei.
 
-### 3. Configurează
+### 3. Descarcă și configurează
 ```bash
-git clone <acest-repo>
-cd blood-diamonds-bot
+git clone https://github.com/dinica600-bot/Test.git bxd
+cd bxd
 npm install
-cp .env.example .env
+npm run setup
 ```
-Deschide `.env` și completează `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`, `OWNER_ID`.
-(ID-urile se copiază activând **Setări → Avansat → Mod dezvoltator** în Discord.)
+
+`npm run setup` te întreabă **doar tokenul**. Restul le află singur de la Discord:
+Application ID, ID-ul tău de owner și serverul (ți-l alege dintr-o listă). Scrie `.env` gata completat.
+
+> Dacă preferi manual: `cp .env.example .env` și completezi tu câmpurile.
 
 ### 4. Înregistrează comenzile și pornește botul
 ```bash
@@ -310,6 +313,33 @@ npm install -g pm2
 pm2 start src/index.js --name blood-diamonds
 pm2 save && pm2 startup
 ```
+
+<details>
+<summary><b>📱 Direct de pe telefon, cu Termux (fără PC)</b></summary>
+
+Instalează **Termux de pe [F-Droid](https://f-droid.org/en/packages/com.termux/)** — versiunea din Play Store e veche și nu merge.
+
+```bash
+pkg update -y && pkg upgrade -y
+pkg install nodejs git -y
+
+git clone https://github.com/dinica600-bot/Test.git bxd
+cd bxd
+npm install
+npm run setup
+npm run deploy
+npm start
+```
+
+**Ca să nu-l omoare Android:**
+- rulează `termux-wake-lock` înainte de `npm start`
+- Setări Android → Aplicații → Termux → Baterie → **Fără restricții**
+- nu da swipe pe Termux din aplicațiile recente
+
+**Mai târziu:** îl repornești cu `cd bxd && npm start`, iar codul îl actualizezi cu `cd bxd && git pull && npm install`.
+
+Botul e online cât timp Termux rulează. Pentru 24/7 real, mută-l pe un hosting.
+</details>
 
 Merge și pe orice host care rulează Node.js 18+ (Railway, Fly.io, Pterodactyl etc.).
 Setează acolo aceleași variabile din `.env` și comanda de start `npm start`.
