@@ -226,11 +226,70 @@ def make_welcome(w=1024, h=320):
     return 'welcome.png'
 
 
+# ----------------------------------------------------------------------
+#  4. EMOJI PERSONALIZATE (128x128, fundal transparent)
+#     Nu cer niciun boost — 50 de sloturi sunt gratuite pe orice server.
+# ----------------------------------------------------------------------
+EMOJIS = [
+    ('bxd',       'mono',    'BxD', BLOOD, DIAMOND),
+    ('sange',     'drop',    None, BLOOD, (255, 140, 150)),
+    ('diamant',   'diamond', None, DIAMOND, DIAMOND_LIGHT),
+    ('gold',      'badge',   'G', (233, 196, 106), (120, 90, 20)),
+    ('exp',       'badge',   'E', (231, 111, 81), (110, 40, 25)),
+    ('mid',       'badge',   'M', (160, 108, 213), (70, 40, 110)),
+    ('jungle',    'badge',   'J', (42, 157, 143), (15, 70, 65)),
+    ('roam',      'badge',   'R', (72, 202, 228), (20, 90, 110)),
+    ('warrior',   'badge',   'W', (168, 118, 62), (70, 45, 20)),
+    ('epic',      'badge',   'EP', (199, 125, 255), (80, 40, 120)),
+    ('legend',    'badge',   'LG', (255, 109, 0), (110, 45, 0)),
+    ('mythic',    'badge',   'MY', (255, 32, 110), (110, 10, 45)),
+    ('glory',     'badge',   'GL', (255, 77, 109), (110, 25, 40)),
+    ('immortal',  'badge',   'IM', (247, 37, 133), (95, 15, 55)),
+    ('win',       'badge',   'W', (34, 197, 94), (10, 70, 35)),
+    ('loss',      'badge',   'L', (239, 68, 68), (90, 20, 20)),
+    ('mvp',       'badge',   'MVP', (255, 215, 0), (110, 85, 0)),
+    ('scrim',     'badge',   'VS', (193, 18, 31), (70, 8, 14)),
+]
+
+
+def make_emoji(key, kind, label, c1, c2, size=128):
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    c = size / 2
+
+    if kind == 'drop':
+        draw_drop(d, c, c + size * 0.10, size * 0.34, c1, c2, 5)
+    elif kind == 'diamond':
+        draw_diamond(d, c, c - size * 0.04, size * 0.34, c1, c2, 5)
+    elif kind == 'mono':
+        # la 32px textul devine ilizibil, asa ca marca ramane doar din simboluri
+        draw_drop(d, c - size * 0.20, c + size * 0.06, size * 0.26, c1, (255, 140, 150), 5)
+        draw_diamond(d, c + size * 0.21, c - size * 0.02, size * 0.27, c2, DIAMOND_LIGHT, 5)
+    else:  # badge — pastila colorata cu initiale
+        d.rounded_rectangle([size * 0.06, size * 0.06, size * 0.94, size * 0.94],
+                            radius=int(size * 0.30), fill=c2)
+        d.rounded_rectangle([size * 0.06, size * 0.06, size * 0.94, size * 0.94],
+                            radius=int(size * 0.30), outline=c1, width=6)
+        f = fit_font(d, label, FONT_BOLD, size * 0.62, int(size * 0.52))
+        bbox = d.textbbox((0, 0), label, font=f)
+        d.text((c - (bbox[2] - bbox[0]) / 2 - bbox[0], c - (bbox[3] - bbox[1]) / 2 - bbox[1]),
+               label, font=f, fill=c1)
+
+    name = f'emoji-{key}.png'
+    img.save(os.path.join(OUT, 'emoji', name), optimize=True)
+    return name
+
+
 if __name__ == '__main__':
+    os.makedirs(os.path.join(OUT, 'emoji'), exist_ok=True)
     made = [make_icon(), make_welcome()]
     for key, title, sub, accent, glyph in BANNERS:
         made.append(make_banner(key, title, sub, accent, glyph))
     for name in made:
         path = os.path.join(OUT, name)
         print(f'  {name:26s} {os.path.getsize(path) // 1024:4d} KB')
-    print(f'\n{len(made)} imagini in assets/')
+
+    emojis = [make_emoji(*e) for e in EMOJIS]
+    total = sum(os.path.getsize(os.path.join(OUT, 'emoji', n)) for n in emojis)
+    print(f'  emoji/ ({len(emojis)} fisiere)      {total // 1024:4d} KB')
+    print(f'\n{len(made)} imagini + {len(emojis)} emoji in assets/')

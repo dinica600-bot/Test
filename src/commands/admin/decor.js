@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } from 'discord.js';
 import { embeds } from '../../lib/embeds.js';
 import { asset, assetPath } from '../../lib/assets.js';
+import { emojiName, setEmojiId, FALLBACK } from '../../lib/emojis.js';
 import { getChannel } from '../../lib/guildMap.js';
 import { settings } from '../../lib/db.js';
 import { COLORS, config } from '../../config/config.js';
@@ -44,6 +45,35 @@ async function postBanners(guild) {
   return { posted, missing };
 }
 
+/** Incarca emoji-urile din assets/emoji. Nu cere boost-uri. */
+async function uploadEmojis(guild) {
+  const uploaded = [];
+  const skipped = [];
+  const failed = [];
+
+  for (const key of Object.keys(FALLBACK)) {
+    const name = emojiName(key);
+    const path = assetPath(`emoji/emoji-${key}.png`);
+    if (!path) { failed.push(key); continue; }
+
+    const existing = guild.emojis.cache.find((em) => em.name === name);
+    if (existing) {
+      setEmojiId(guild.id, key, existing.id);
+      skipped.push(`<:${name}:${existing.id}>`);
+      continue;
+    }
+
+    try {
+      const emoji = await guild.emojis.create({ attachment: path, name, reason: 'Pachet emoji Blood×Diamonds' });
+      setEmojiId(guild.id, key, emoji.id);
+      uploaded.push(`<:${name}:${emoji.id}>`);
+    } catch (err) {
+      failed.push(`${key} (${err.message.slice(0, 40)})`);
+    }
+  }
+  return { uploaded, skipped, failed };
+}
+
 export default {
   data: new SlashCommandBuilder()
     .setName('decor')
@@ -53,7 +83,8 @@ export default {
     .addSubcommand((s) => s.setName('tot').setDescription('Toate de mai jos, dintr-o mișcare'))
     .addSubcommand((s) => s.setName('icon').setDescription('Setează iconul serverului'))
     .addSubcommand((s) => s.setName('avatar').setDescription('Setează poza de profil a botului'))
-    .addSubcommand((s) => s.setName('banere').setDescription('Postează banerele în canale')),
+    .addSubcommand((s) => s.setName('banere').setDescription('Postează banerele în canale'))
+    .addSubcommand((s) => s.setName('emoji').setDescription('Încarcă pachetul de emoji al squad-ului (nu cere boost-uri)')),
 
   staffOnly: true,
   cooldown: 30,
@@ -77,6 +108,13 @@ export default {
       await client.user.setAvatar(icon)
         .then(() => done.push('🤖 **Avatarul botului** — pus'))
         .catch(() => failed.push('avatarul botului (Discord permite doar 2 schimbări pe oră)'));
+    }
+
+    if (sub === 'tot' || sub === 'emoji') {
+      const { uploaded, skipped, failed: bad } = await uploadEmojis(guild);
+      if (uploaded.length) done.push(`😀 **${uploaded.length} emoji** încărcate: ${uploaded.join(' ')}`);
+      if (skipped.length) done.push(`♻️ **${skipped.length} emoji** existau deja: ${skipped.join(' ')}`);
+      if (bad.length) failed.push(`${bad.length} emoji (${bad[0]})`);
     }
 
     if (sub === 'tot' || sub === 'banere') {

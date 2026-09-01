@@ -278,6 +278,10 @@ Vrei alt stil? Editezi culorile și textele în `scripts/generate-assets.py`, ru
 
 Discord cere boost-uri pentru ele: **Nivel 2** (7 boost-uri) pentru gradient, **Nivel 3** (14) pentru holografic. Fără boost-uri rolurile primesc culoarea simplă și totul merge normal — când ajungi acolo, rulezi `/setup stiluri` și se aplică peste rolurile existente.
 
+**Emoji personalizate** — 18 emoji generate (marca squad-ului, badge-uri de lane, rank, win/loss/MVP), încărcate cu `/decor emoji`. **Nu cer niciun boost** — orice server are 50 de sloturi gratuite. Botul le folosește automat în embed-uri, iar membrii le pot pune în chat și ca reacții.
+
+**Community, ecran de bun venit și onboarding** — `/setup comunitate` activează modul Community (gratis), pune ecranul de bun venit cu scurtături spre canalele importante și configurează **onboarding-ul**: la intrarea pe server, noii membri primesc întrebările *„Ce lane joci?"*, *„Ce rank ai?"*, *„Ce notificări vrei?"* și primesc rolurile automat. Tot activarea Community transformă `📢︱anunțuri` în canal de anunțuri, pe care alte servere îl pot urmări.
+
 **Conținut zilnic** — în fiecare zi botul postează singur în `🎯︱hero-tips` **eroul zilei** (rol, lane, counter-e, primii itemi) plus un sfat de joc, ca serverul să aibă viață și când nu scrie nimeni.
 
 ---

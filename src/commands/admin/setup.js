@@ -1,5 +1,7 @@
 import {
   SlashCommandBuilder, PermissionFlagsBits, ChannelType, MessageFlags,
+  GuildVerificationLevel, GuildExplicitContentFilter, GuildOnboardingMode,
+  GuildOnboardingPromptType,
 } from 'discord.js';
 import { ROLES, CATEGORIES, VISIBILITY_ROLES, STAFF_KEYS } from '../../config/blueprint.js';
 import { embeds } from '../../lib/embeds.js';
@@ -266,6 +268,9 @@ export default {
       .setName('logs')
       .setDescription('Reconectează canalele de log la bot'))
     .addSubcommand((s) => s
+      .setName('comunitate')
+      .setDescription('Activează Community + ecranul de bun venit + onboarding (gratis, fără boost-uri)'))
+    .addSubcommand((s) => s
       .setName('stiluri')
       .setDescription('Aplică nume cu gradient și holografice pe rolurile de staff (cere boost-uri)'))
     .addSubcommand((s) => s
@@ -313,6 +318,147 @@ export default {
       rolesCreated: 0, rolesExisting: 0, categoriesCreated: 0,
       channelsCreated: 0, channelsExisting: 0, panels: 0, styled: 0, errors: [],
     };
+
+    if (sub === 'comunitate') {
+      const done = [];
+      const problems = [];
+      const rules = getChannel(guild, 'rules');
+      const updates = getChannel(guild, 'staff-chat') ?? getChannel(guild, 'announcements');
+
+      // ---- 1. activam Community (gratis, deblocheaza restul) ----
+      if (!guild.features.includes('COMMUNITY')) {
+        if (!rules || !updates) {
+          problems.push('Lipsesc `📜︱reguli` sau `💼︱staff-chat`. Ruleaza intai `/setup server`.');
+        } else {
+          try {
+            await guild.edit({
+              features: [...new Set([...guild.features, 'COMMUNITY'])],
+              rulesChannel: rules,
+              publicUpdatesChannel: updates,
+              verificationLevel: GuildVerificationLevel.Low,
+              explicitContentFilter: GuildExplicitContentFilter.AllMembers,
+              reason: 'Activare Community',
+            });
+            done.push('🏛️ **Community activat** — deblocheaza canale de anunturi, forumuri si stage');
+          } catch (err) {
+            problems.push(`Nu am putut activa Community: ${err.message}`);
+          }
+        }
+      } else {
+        done.push('🏛️ Community era deja activat');
+      }
+
+      const isCommunity = guild.features.includes('COMMUNITY');
+
+      // ---- 2. canalul de anunturi devine unul de tip announcement ----
+      const announcements = getChannel(guild, 'announcements');
+      if (isCommunity && announcements?.type === ChannelType.GuildText) {
+        await announcements.setType(ChannelType.GuildAnnouncement)
+          .then(() => done.push('📢 `anunțuri` e acum canal de **anunțuri** (membrii îl pot urmări pe alte servere)'))
+          .catch(() => {});
+      }
+
+      // ---- 3. ecranul de bun venit ----
+      if (isCommunity) {
+        const shortcuts = [
+          { key: 'verify', emoji: '✅', text: 'Verifica-te ca sa intri pe server' },
+          { key: 'roles', emoji: '🎭', text: 'Alege-ti lane-ul si rank-ul' },
+          { key: 'general', emoji: '💬', text: 'Prezinta-te comunitatii' },
+          { key: 'lfg', emoji: '🎮', text: 'Cauta coechipieri pentru rank' },
+          { key: 'how-to-apply', emoji: '🎯', text: 'Aplica pentru roster' },
+        ]
+          .map((s2) => ({ channel: getChannel(guild, s2.key), description: s2.text, emoji: s2.emoji }))
+          .filter((s2) => s2.channel)
+          .slice(0, 5);
+
+        if (shortcuts.length) {
+          try {
+            await guild.editWelcomeScreen({
+              enabled: true,
+              description: `${config.squadName} — squad de Mobile Legends. Verifica-te, alege-ti lane-ul si hai la rank.`,
+              welcomeChannels: shortcuts,
+            });
+            done.push(`👋 **Ecran de bun venit** cu ${shortcuts.length} scurtaturi`);
+          } catch (err) {
+            problems.push(`Ecranul de bun venit: ${err.message}`);
+          }
+        }
+      }
+
+      // ---- 4. onboarding: intrebarile de la intrarea pe server ----
+      if (isCommunity) {
+        const opt = (roleKey, title, description, emoji) => {
+          const role = getRole(guild, roleKey);
+          return role ? { title, description, emoji, roles: [role.id] } : null;
+        };
+
+        const prompts = [
+          {
+            title: 'Ce lane joci?',
+            type: GuildOnboardingPromptType.MultipleChoice,
+            singleSelect: false, required: false, inOnboarding: true,
+            options: [
+              opt('lane_gold', 'Gold Lane', 'Marksman, carry-ul echipei', '🥇'),
+              opt('lane_exp', 'EXP Lane', 'Fighter, tine partea de sus', '🛡️'),
+              opt('lane_mid', 'Mid Lane', 'Mage, roteste pe toata harta', '🔮'),
+              opt('lane_jungle', 'Jungler', 'Assassin, ia obiectivele', '🌲'),
+              opt('lane_roam', 'Roamer', 'Tank/Support, incepe fight-urile', '🧿'),
+            ].filter(Boolean),
+          },
+          {
+            title: 'Ce rank ai?',
+            type: GuildOnboardingPromptType.Dropdown,
+            singleSelect: true, required: false, inOnboarding: true,
+            options: [
+              opt('rank_epic', 'Epic', 'Epic V — Epic I', '💜'),
+              opt('rank_legend', 'Legend', 'Legend V — Legend I', '🔥'),
+              opt('rank_mythic', 'Mythic', '0-24 puncte', '🌌'),
+              opt('rank_honor', 'Mythical Honor', '25-49 puncte', '✨'),
+              opt('rank_glory', 'Mythical Glory', '50-99 puncte', '👑'),
+              opt('rank_immortal', 'Mythical Immortal', '100+ puncte', '💫'),
+            ].filter(Boolean),
+          },
+          {
+            title: 'Ce notificări vrei?',
+            type: GuildOnboardingPromptType.MultipleChoice,
+            singleSelect: false, required: false, inOnboarding: true,
+            options: [
+              opt('ping_scrim', 'Scrim-uri', 'Cand se organizeaza un scrim', '⚔️'),
+              opt('ping_tournament', 'Turnee', 'Inscrieri si meciuri oficiale', '🏆'),
+              opt('ping_giveaway', 'Giveaway-uri', 'Premii si concursuri', '🎁'),
+              opt('ping_lfg', 'Caut echipă', 'Cand cineva cauta coechipieri', '🎮'),
+            ].filter(Boolean),
+          },
+        ].filter((p2) => p2.options.length);
+
+        const defaults = ['welcome', 'rules', 'verify', 'roles', 'general', 'commands', 'lfg', 'memes', 'media']
+          .map((k) => getChannel(guild, k)).filter(Boolean);
+
+        try {
+          await guild.editOnboarding({
+            enabled: true,
+            mode: GuildOnboardingMode.OnboardingDefault,
+            defaultChannels: defaults,
+            prompts,
+            reason: 'Onboarding Blood×Diamonds',
+          });
+          done.push(`🚀 **Onboarding pornit** — ${prompts.length} intrebari la intrarea pe server, cu roluri automate`);
+        } catch (err) {
+          problems.push(
+            `Onboarding: ${err.message}\n` +
+            '_Discord cere minim 7 canale implicite, din care 5 sa permita scrisul pentru @everyone. ' +
+            'Serverul are canalele blocate in spatele verificarii, deci e normal sa refuze._',
+          );
+        }
+      }
+
+      const embed = embeds
+        .custom(done.length ? COLORS.success : COLORS.warning)
+        .setTitle('🏛️ Community & Onboarding')
+        .setDescription(done.length ? done.join('\n') : 'Nu am putut activa nimic.');
+      if (problems.length) embed.addFields({ name: '⚠️ Ce n-a mers', value: problems.join('\n\n').slice(0, 1000) });
+      return interaction.editReply({ embeds: [embed] });
+    }
 
     if (sub === 'stiluri') {
       const styled = [];

@@ -3,6 +3,7 @@ import { embeds } from '../../lib/embeds.js';
 import { db } from '../../lib/db.js';
 import { getChannel } from '../../lib/guildMap.js';
 import { COLORS, config } from '../../config/config.js';
+import { e } from '../../lib/emojis.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -47,18 +48,20 @@ export default {
           embeds.custom(wr >= 50 ? COLORS.success : COLORS.warning)
             .setTitle(`📊 Bilanț ${config.squadName}`)
             .addFields(
-              { name: '🏆 Victorii', value: `**${wins}**`, inline: true },
-              { name: '❌ Înfrângeri', value: `**${losses}**`, inline: true },
+              { name: `${e(interaction.guild, 'win')} Victorii`, value: `**${wins}**`, inline: true },
+              { name: `${e(interaction.guild, 'loss')} Înfrângeri`, value: `**${losses}**`, inline: true },
               { name: '🤝 Egaluri', value: `**${draws}**`, inline: true },
               { name: '📈 Winrate', value: `**${wr}%** din ${results.length} meciuri` },
               {
                 name: '⭐ Cei mai mulți MVP',
-                value: topMvp.length ? topMvp.map(([id, n], i) => `\`${i + 1}.\` <@${id}> — **${n}**`).join('\n') : '_—_',
+                value: topMvp.length
+                  ? topMvp.map(([id, n], i) => `\`${i + 1}.\` <@${id}> — ${e(interaction.guild, 'mvp')} **${n}**`).join('\n')
+                  : '_—_',
               },
               {
                 name: '🕐 Ultimele meciuri',
                 value: results.slice(-5).reverse()
-                  .map((r) => `${r.type === 'win' ? '🟢' : r.type === 'loss' ? '🔴' : '🟡'} vs **${r.opponent}** ${r.score}`)
+                  .map((r) => `${r.type === 'win' ? e(interaction.guild, 'win') : r.type === 'loss' ? e(interaction.guild, 'loss') : '🟡'} vs **${r.opponent}** ${r.score}`)
                   .join('\n') || '_—_',
               },
             ),
@@ -80,10 +83,14 @@ export default {
 
     const embed = embeds
       .custom(result.type === 'win' ? COLORS.success : result.type === 'loss' ? COLORS.danger : COLORS.warning)
-      .setTitle(`${result.type === 'win' ? '🏆 VICTORIE' : result.type === 'loss' ? '❌ ÎNFRÂNGERE' : '🤝 EGAL'} — ${config.squadTag} ${result.score} ${result.opponent}`)
+      .setTitle(
+        `${result.type === 'win' ? `${e(interaction.guild, 'win')} VICTORIE`
+          : result.type === 'loss' ? `${e(interaction.guild, 'loss')} ÎNFRÂNGERE` : '🤝 EGAL'}`
+        + ` — ${config.squadTag} ${result.score} ${result.opponent}`,
+      )
       .addFields(
         { name: 'Competiție', value: result.competition, inline: true },
-        { name: 'MVP', value: result.mvp ? `<@${result.mvp}>` : '—', inline: true },
+        { name: `${e(interaction.guild, 'mvp')} MVP`, value: result.mvp ? `<@${result.mvp}>` : '—', inline: true },
       );
     if (result.notes) embed.addFields({ name: '📝 Note', value: result.notes });
 
