@@ -369,6 +369,130 @@ RANKS = {
 }
 
 
+
+# ---- embleme de staff si de echipa (hexagon, ca sa nu se confunde cu rank-urile) ----
+HEX = [(0.5, 0.0), (0.96, 0.26), (0.96, 0.74), (0.5, 1.0), (0.04, 0.74), (0.04, 0.26)]
+
+
+def glyph_sword(d, cx, cy, r, color, light):
+    d.polygon([(cx, cy - r * 1.05), (cx + r * 0.17, cy - r * 0.55),
+               (cx + r * 0.13, cy + r * 0.45), (cx - r * 0.13, cy + r * 0.45),
+               (cx - r * 0.17, cy - r * 0.55)], fill=light)
+    d.rectangle([cx - r * 0.62, cy + r * 0.42, cx + r * 0.62, cy + r * 0.63], fill=color)
+    d.rectangle([cx - r * 0.14, cy + r * 0.60, cx + r * 0.14, cy + r * 1.05], fill=color)
+
+
+def glyph_shield(d, cx, cy, r, color, light):
+    poly(d, SHIELD, (cx - r * 0.72, cy - r * 0.95, r * 1.44, r * 1.9), fill=light)
+    star(d, cx, cy - r * 0.10, r * 0.34, color)
+
+
+def glyph_target(d, cx, cy, r, color, light):
+    for i, rad in enumerate((r * 0.95, r * 0.62, r * 0.30)):
+        d.ellipse([cx - rad, cy - rad, cx + rad, cy + rad],
+                  fill=light if i % 2 == 0 else color,
+                  outline=light, width=int(r * 0.12))
+
+
+def glyph_play(d, cx, cy, r, color, light):
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=light, width=int(r * 0.20))
+    d.polygon([(cx - r * 0.30, cy - r * 0.46), (cx + r * 0.52, cy),
+               (cx - r * 0.30, cy + r * 0.46)], fill=light)
+
+
+def glyph_trophy(d, cx, cy, r, color, light):
+    d.polygon([(cx - r * 0.62, cy - r * 0.85), (cx + r * 0.62, cy - r * 0.85),
+               (cx + r * 0.40, cy + r * 0.20), (cx - r * 0.40, cy + r * 0.20)], fill=light)
+    for side in (-1, 1):
+        d.arc([cx + side * r * 0.60 - r * 0.42, cy - r * 0.80,
+               cx + side * r * 0.60 + r * 0.42, cy - r * 0.05],
+              0, 360, fill=light, width=int(r * 0.15))
+    d.rectangle([cx - r * 0.13, cy + r * 0.18, cx + r * 0.13, cy + r * 0.62], fill=light)
+    d.rectangle([cx - r * 0.52, cy + r * 0.60, cx + r * 0.52, cy + r * 0.85], fill=light)
+
+
+def glyph_swap(d, cx, cy, r, color, light):
+    for side in (-1, 1):
+        y = cy + side * r * 0.42
+        d.rectangle([cx - r * 0.62, y - r * 0.11, cx + r * 0.40, y + r * 0.11], fill=light)
+        tip = cx + side * r * 0.62
+        d.polygon([(tip, y), (tip - side * r * 0.34, y - r * 0.30),
+                   (tip - side * r * 0.34, y + r * 0.30)], fill=light)
+
+
+def glyph_cap(d, cx, cy, r, color, light):
+    d.polygon([(cx, cy - r * 0.78), (cx + r, cy - r * 0.20),
+               (cx, cy + r * 0.34), (cx - r, cy - r * 0.20)], fill=light)
+    d.polygon([(cx - r * 0.56, cy - r * 0.02), (cx + r * 0.56, cy - r * 0.02),
+               (cx + r * 0.56, cy + r * 0.52), (cx - r * 0.56, cy + r * 0.52)], fill=light)
+    d.line([(cx + r * 0.92, cy - r * 0.14), (cx + r * 0.92, cy + r * 0.60)],
+           fill=light, width=int(r * 0.13))
+
+
+def glyph_flask(d, cx, cy, r, color, light):
+    d.rectangle([cx - r * 0.20, cy - r * 0.90, cx + r * 0.20, cy - r * 0.35], fill=light)
+    d.polygon([(cx - r * 0.20, cy - r * 0.40), (cx + r * 0.20, cy - r * 0.40),
+               (cx + r * 0.72, cy + r * 0.78), (cx - r * 0.72, cy + r * 0.78)], fill=light)
+    d.ellipse([cx - r * 0.22, cy + r * 0.18, cx + r * 0.22, cy + r * 0.58], fill=color)
+
+
+GLYPHS = {'crown': None, 'sword': glyph_sword, 'shield': glyph_shield, 'target': glyph_target,
+          'play': glyph_play, 'trophy': glyph_trophy, 'swap': glyph_swap, 'cap': glyph_cap,
+          'flask': glyph_flask}
+
+STAFF = {
+    'owner':    dict(colors=((200, 30, 45), (105, 8, 18)),   edge=(255, 170, 120), glyph='crown',  aura=True, rays=True),
+    'coowner':  dict(colors=((60, 175, 235), (20, 80, 140)), edge=(180, 235, 255), glyph='crown',  aura=True),
+    'admin':    dict(colors=((215, 45, 60), (110, 18, 28)),  edge=(255, 165, 110), glyph='sword'),
+    'mod':      dict(colors=((235, 110, 110), (130, 45, 45)),edge=(255, 215, 150), glyph='shield'),
+    'coach':    dict(colors=((225, 150, 75), (125, 70, 25)), edge=(255, 220, 160), glyph='target'),
+    'creator':  dict(colors=((160, 90, 220), (85, 35, 125)), edge=(250, 170, 255), glyph='play'),
+    'roster':   dict(colors=((225, 180, 40), (125, 90, 10)), edge=(255, 235, 150), glyph='trophy', aura=True),
+    'sub':      dict(colors=((175, 185, 200), (95, 105, 120)),edge=(240, 245, 255), glyph='swap'),
+    'academy':  dict(colors=((70, 180, 225), (25, 85, 135)), edge=(170, 230, 255), glyph='cap'),
+    'tryout':   dict(colors=((120, 190, 110), (50, 100, 45)),edge=(190, 245, 175), glyph='flask'),
+}
+
+
+def make_staff(key, spec, out_dir, size=128):
+    S = size * SS
+    img = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    c = S / 2
+    c1, c2 = spec['colors']
+    edge = spec['edge']
+
+    if spec.get('aura'):
+        glow_layer = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+        ImageDraw.Draw(glow_layer).ellipse([S*0.04, S*0.04, S*0.96, S*0.96], fill=edge + (110,))
+        img = Image.alpha_composite(img, glow_layer.filter(ImageFilter.GaussianBlur(S * 0.065)))
+        d = ImageDraw.Draw(img)
+
+    if spec.get('rays'):
+        for i in range(12):
+            a = math.radians(i * 30 + 15)
+            d.line([(c + math.cos(a) * S * 0.30, c + math.sin(a) * S * 0.30),
+                    (c + math.cos(a) * S * 0.48, c + math.sin(a) * S * 0.48)],
+                   fill=edge + (150,), width=int(S * 0.022))
+
+    box = (S * 0.13, S * 0.09, S * 0.74, S * 0.82)
+    mask = Image.new('L', (S, S), 0)
+    poly(ImageDraw.Draw(mask), HEX, box, fill=255)
+    img.paste(vgradient((S, S), c1, c2).convert('RGBA'), (0, 0), mask)
+    d = ImageDraw.Draw(img)
+    poly(d, HEX, box, outline=edge, width=int(S * 0.032))
+
+    gx, gy, gr = c, S * 0.50, S * 0.20
+    if spec['glyph'] == 'crown':
+        crown(d, gx, gy + S * 0.03, gr * 1.15, edge, (255, 255, 255, 210))
+    else:
+        GLYPHS[spec['glyph']](d, gx, gy, gr, c2, edge)
+
+    img = img.resize((size, size), Image.LANCZOS)
+    img.save(os.path.join(out_dir, f'emoji-{key}.png'), optimize=True)
+    return f'emoji-{key}.png'
+
+
 def make_emoji(key, kind, label, c1, c2, size=128):
     img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
@@ -408,6 +532,7 @@ if __name__ == '__main__':
 
     emojis = [make_emoji(*e) for e in EMOJIS]
     emojis += [make_rank(k, v, os.path.join(OUT, 'emoji')) for k, v in RANKS.items()]
+    emojis += [make_staff(k, v, os.path.join(OUT, 'emoji')) for k, v in STAFF.items()]
     total = sum(os.path.getsize(os.path.join(OUT, 'emoji', n)) for n in emojis)
     print(f'  emoji/ ({len(emojis)} fisiere)      {total // 1024:4d} KB')
     print(f'\n{len(made)} imagini + {len(emojis)} emoji in assets/')

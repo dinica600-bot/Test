@@ -4,13 +4,20 @@ import { getUser, rankOf } from './leveling.js';
 import { getRole } from './guildMap.js';
 import { COLORS, config } from '../config/config.js';
 import { ROLE_EMOJI, findHero } from '../data/heroes.js';
+import { e } from './emojis.js';
 
+/** Rolurile care apar ca insigna pe fisa, in ordinea importantei. */
 const TEAM_BADGES = [
-  { key: 'roster', badge: '🏆 Roster Principal' },
-  { key: 'sub', badge: '🔁 Rezervă' },
-  { key: 'academy', badge: '🎓 Academy' },
-  { key: 'tryout', badge: '🧪 Tryout' },
-  { key: 'coach', badge: '🎯 Coach' },
+  { key: 'owner', label: 'Owner' },
+  { key: 'coowner', label: 'Co-Owner' },
+  { key: 'admin', label: 'Admin' },
+  { key: 'mod', label: 'Moderator' },
+  { key: 'coach', label: 'Coach' },
+  { key: 'creator', label: 'Content Creator' },
+  { key: 'roster', label: 'Roster Principal' },
+  { key: 'sub', label: 'Rezervă' },
+  { key: 'academy', label: 'Academy' },
+  { key: 'tryout', label: 'Tryout' },
 ];
 
 function heroLine(name) {
@@ -28,9 +35,9 @@ export function profileCard(user, member, profile, guildId) {
   if (profile.verifiedId) badges.push('✅ ID verificat');
   if (profile.verifiedStats) badges.push('🛡️ Stats confirmate de staff');
   if (member) {
-    for (const { key, badge } of TEAM_BADGES) {
+    for (const { key, label } of TEAM_BADGES) {
       const role = getRole(member.guild, key);
-      if (role && member.roles.cache.has(role.id)) badges.push(badge);
+      if (role && member.roles.cache.has(role.id)) badges.push(`${e(member.guild, key)} ${label}`);
     }
   }
 
@@ -49,7 +56,7 @@ export function profileCard(user, member, profile, guildId) {
     .setTitle(`🎮 Profil Mobile Legends`)
     .setThumbnail(user.displayAvatarURL({ size: 256 }))
     .setDescription(
-      `${user}\n${badges.length ? badges.map((b) => `\`${b}\``).join(' ') : '`⚠️ cont neverificat`'}`,
+      `${user}\n${badges.length ? badges.join('  ') : '`⚠️ cont neverificat`'}`,
     )
     .addFields(
       { name: '🆔 User ID (Zone)', value: idLine, inline: true },

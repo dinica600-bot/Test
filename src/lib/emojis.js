@@ -14,6 +14,8 @@ export const FALLBACK = {
   warrior: '⚔️', elite: '🔰', master: '🎖️', gm: '🏅', epic: '💜',
   legend: '🔥', mythic: '🌌', honor: '✨', glory: '👑', immortal: '💫',
   win: '🏆', loss: '❌', mvp: '⭐', scrim: '⚔️',
+  owner: '🩸', coowner: '💎', admin: '⚔️', mod: '🛡️', coach: '🎯',
+  creator: '🎥', roster: '🏆', sub: '🔁', academy: '🎓', tryout: '🧪',
 };
 
 /** Numele cu care se incarca pe server (prefixate ca sa nu se bata cap in cap). */

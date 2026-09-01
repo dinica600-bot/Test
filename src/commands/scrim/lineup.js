@@ -3,6 +3,7 @@ import { embeds } from '../../lib/embeds.js';
 import { getRole } from '../../lib/guildMap.js';
 import { db } from '../../lib/db.js';
 import { COLORS, config } from '../../config/config.js';
+import { e } from '../../lib/emojis.js';
 
 const LANES = [
   { key: 'lane_gold', label: '🥇 Gold Lane' },
@@ -56,7 +57,7 @@ export default {
     return interaction.reply({
       embeds: [
         embeds.custom(COLORS.gold)
-          .setTitle(`🏅 Line-up ${config.squadName} — ${group.name}`)
+          .setTitle(`${e(interaction.guild, groupKey)} Line-up ${config.squadName} — ${group.name}`)
           .setDescription(`**${members.size}** jucători în acest lot.`)
           .addFields(
             ...fields,

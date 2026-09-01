@@ -278,7 +278,15 @@ Vrei alt stil? Editezi culorile și textele în `scripts/generate-assets.py`, ru
 
 Discord cere boost-uri pentru ele: **Nivel 2** (7 boost-uri) pentru gradient, **Nivel 3** (14) pentru holografic. Fără boost-uri rolurile primesc culoarea simplă și totul merge normal — când ajungi acolo, rulezi `/setup stiluri` și se aplică peste rolurile existente.
 
-**Emoji personalizate** — 22 emoji generate, încărcate cu `/decor emoji`: marca squad-ului, badge-uri de lane, win/loss/MVP și **10 embleme de rank** desenate în progresia din joc — scut simplu la Warrior, apoi stele, aripi, gemă, flacără, aură și coroană până la Mythical Immortal. Emblemele apar automat pe fișa de jucător (`/profil vezi`) și în meniul de rank din `🎭︱self-roles`.
+**Emoji personalizate** — 32 emoji generate, încărcate cu `/decor emoji` (din cele 50 de sloturi gratuite):
+
+| Set | Ce conține |
+|---|---|
+| **10 embleme de rank** (scut) | Warrior → Immortal, în progresia din joc: stea, apoi stele, aripi, gemă, flacără, aură, coroană |
+| **10 embleme de staff** (hexagon) | Owner și Co-Owner cu coroană și aură, Admin sabie, Moderator scut, Coach țintă, Creator play, Roster trofeu, Rezervă săgeți, Academy tocă, Tryout eprubetă |
+| **12 utilitare** | marca BxD, picătură, diamant, lane-uri, win / loss / MVP / scrim |
+
+Emblemele apar automat pe fișa de jucător (`/profil vezi`) — la rank și ca insigne de rol —, în meniul de rank din `🎭︱self-roles`, la `/lineup` și la `/rezultat`.
 
 > Emblemele sunt **desen propriu**, nu iconițele oficiale Moonton — alea sunt protejate de drepturi de autor și nu pot fi redistribuite. **Nu cer niciun boost** — orice server are 50 de sloturi gratuite. Botul le folosește automat în embed-uri, iar membrii le pot pune în chat și ca reacții.
 
