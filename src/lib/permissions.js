@@ -8,11 +8,20 @@ export function isOwner(member) {
   return member.id === config.ownerId || member.id === member.guild.ownerId;
 }
 
+/**
+ * Rolurile care pot folosi comenzile de staff.
+ *
+ * Coach-ul e inclus aici (evalueaza tryout-urile, programeaza evenimente,
+ * preia tickete), dar NU e in STAFF_KEYS — deci tot nu vede canalele de
+ * staff si de logs. Daca nu vrei coach-ul aici, sterge-l din lista.
+ */
+const COMMAND_STAFF_KEYS = [...STAFF_KEYS, 'coach'];
+
 /** Are unul din rolurile de staff (sau permisiuni echivalente)? */
 export function isStaff(member) {
   if (isOwner(member)) return true;
   if (member.permissions.has(PermissionFlagsBits.ManageGuild)) return true;
-  return STAFF_KEYS.some((key) => {
+  return COMMAND_STAFF_KEYS.some((key) => {
     const role = getRole(member.guild, key);
     return role && member.roles.cache.has(role.id);
   });
