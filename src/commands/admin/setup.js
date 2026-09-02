@@ -304,6 +304,7 @@ export default {
         embeds: [
           embeds.custom(missingRoles.length || missingChannels.length ? COLORS.warning : COLORS.success)
             .setTitle('🔍 Status server')
+            .setFooter({ text: `Cod încărcat: ${ROLES.length} roluri, ${CATEGORIES.flatMap((c) => c.channels).length} canale în blueprint` })
             .addFields(
               { name: 'Roluri', value: `${ROLES.length - missingRoles.length}/${ROLES.length} existente`, inline: true },
               { name: 'Canale', value: `${CATEGORIES.flatMap((c) => c.channels).length - missingChannels.length}/${CATEGORIES.flatMap((c) => c.channels).length} existente`, inline: true },

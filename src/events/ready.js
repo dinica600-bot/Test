@@ -8,6 +8,7 @@ import { startDailyLoop } from '../lib/daily.js';
 import { startAmbianceLoop } from '../lib/personas.js';
 import { startLiveWatcher } from '../lib/tiktok.js';
 import { settings } from '../lib/db.js';
+import { ROLES, CATEGORIES } from '../config/blueprint.js';
 
 export default {
   name: Events.ClientReady,
@@ -15,6 +16,11 @@ export default {
   async execute(client) {
     console_.ok(`Conectat ca ${client.user.tag}`);
     console_.info(`Servere: ${client.guilds.cache.size} • Membri: ${client.guilds.cache.reduce((a, g) => a + g.memberCount, 0)}`);
+    // Asa vezi imediat daca rulezi codul nou: numerele cresc cand adaug ceva.
+    console_.info(
+      `Blueprint incarcat: ${ROLES.length} roluri, ${CATEGORIES.flatMap((c) => c.channels).length} canale. ` +
+      'Daca ai facut git pull si numerele nu s-au schimbat, botul vechi inca ruleaza.',
+    );
 
     const activities = [
       { name: `${config.squadName} 🩸`, type: ActivityType.Competing },
