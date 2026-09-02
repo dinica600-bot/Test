@@ -18,6 +18,10 @@ export default {
       .addIntegerOption((o) => o.setName('minim').setDescription('Minim minute între conversații (implicit 45)').setMinValue(15).setMaxValue(720))
       .addIntegerOption((o) => o.setName('maxim').setDescription('Maxim minute între conversații (implicit 180)').setMinValue(20).setMaxValue(1440)))
     .addSubcommand((s) => s.setName('oprit').setDescription('Oprește conversațiile automate'))
+    .addSubcommand((s) => s
+      .setName('raspunsuri')
+      .setDescription('Personajele răspund sau nu la mesajele din chat')
+      .addBooleanOption((o) => o.setName('activ').setDescription('Pornit / oprit').setRequired(true)))
     .addSubcommand((s) => s.setName('acum').setDescription('Pornește o conversație pe loc'))
     .addSubcommand((s) => s.setName('status').setDescription('Cum e configurată ambianța'))
     .addSubcommand((s) => s.setName('sterge').setDescription('Șterge definitiv personajele (webhook-urile)')),
@@ -55,10 +59,26 @@ export default {
               name: 'Personaje',
               value: Object.values(PERSONAS).map((p) => `• ${p.name}`).join('\n'),
             }, {
+              name: 'Ce fac',
+              value:
+                '• poartă conversații între ele când e liniște\n' +
+                '• **răspund la întrebările voastre** — despre eroi, counter-e, build-uri\n' +
+                '• mai pun și ele întrebări în chat',
+            }, {
               name: '⚠️ De reținut',
               value: 'Discord le pune automat eticheta **APP** lângă nume. Nu pot arăta ca membri reali.',
             }),
         ],
+      });
+    }
+
+    if (sub === 'raspunsuri') {
+      const on = interaction.options.getBoolean('activ');
+      settings.set(gid, 'ambiance.reply', on);
+      return interaction.reply({
+        embeds: [embeds.success(on
+          ? 'Personajele răspund acum la mesajele din chat — la întrebări aproape mereu, la afirmații rar, și cel mult o dată pe minut.'
+          : 'Personajele nu mai răspund la mesaje. Conversațiile automate rămân.')],
       });
     }
 
@@ -96,6 +116,7 @@ export default {
             { name: 'Stare', value: on ? '🟢 pornită' : '🔴 oprită', inline: true },
             { name: 'Canal', value: settings.get(gid, 'ambiance.channel') ? `<#${settings.get(gid, 'ambiance.channel')}>` : '`general`', inline: true },
             { name: 'Interval', value: `${settings.get(gid, 'ambiance.minMinutes', 45)}-${settings.get(gid, 'ambiance.maxMinutes', 180)} min`, inline: true },
+            { name: 'Răspund în chat', value: settings.get(gid, 'ambiance.reply', true) === false ? '🔴 nu' : '🟢 da', inline: true },
             { name: 'Următoarea', value: on && next > Date.now() ? `<t:${Math.floor(next / 1000)}:R>` : '—' },
           ),
       ],

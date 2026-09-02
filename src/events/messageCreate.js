@@ -3,13 +3,58 @@ import { runAutomod } from '../lib/automod.js';
 import { addXp, addMessage, handleLevelUp } from '../lib/leveling.js';
 import { db, settings } from '../lib/db.js';
 import { getChannel } from '../lib/guildMap.js';
+import { answerFor, maybeFollowUp, isQuestion } from '../lib/personaBrain.js';
+import { sendAs } from '../lib/personas.js';
+
+/** Ultimul raspuns dat de personaje, pe canal — ca sa nu vorbeasca peste tot. */
+const lastReply = new Map();
+
+/**
+ * Personajele citesc chatul si raspund uneori. Nu la orice mesaj:
+ * la intrebari aproape mereu, la afirmatii rar, si niciodata mai des
+ * de o data pe minut, ca sa nu sufoce discutia.
+ */
+async function personaReply(message) {
+  if (settings.get(message.guild.id, 'ambiance.enabled', false) !== true) return;
+  if (settings.get(message.guild.id, 'ambiance.reply', true) === false) return;
+
+  const channelId = settings.get(message.guild.id, 'ambiance.channel');
+  const allowed = channelId ?? getChannel(message.guild, 'general')?.id;
+  if (message.channel.id !== allowed) return;
+
+  const last = lastReply.get(message.channel.id) ?? 0;
+  if (Date.now() - last < 60_000) return;
+
+  const answer = answerFor(message.content);
+  if (!answer) return;
+  // la afirmatii raspund doar din cand in cand
+  if (!isQuestion(message.content) && Math.random() > 0.35) return;
+
+  lastReply.set(message.channel.id, Date.now());
+
+  await new Promise((r) => setTimeout(r, 2000 + Math.random() * 3000));
+  await message.channel.sendTyping().catch(() => {});
+  await new Promise((r) => setTimeout(r, 1200 + answer.text.length * 35));
+  await sendAs(message.channel, answer.who, answer.text);
+
+  const followUp = maybeFollowUp(answer.who);
+  if (followUp) {
+    await new Promise((r) => setTimeout(r, 5000 + Math.random() * 5000));
+    await message.channel.sendTyping().catch(() => {});
+    await new Promise((r) => setTimeout(r, 1500));
+    await sendAs(message.channel, followUp.who, followUp.text);
+  }
+}
 
 export default {
   name: Events.MessageCreate,
   async execute(message) {
-    if (!message.guild || message.author.bot) return;
+    // webhook-urile personajelor nu trebuie sa se declanseze intre ele
+    if (!message.guild || message.author.bot || message.webhookId) return;
 
     if (await runAutomod(message)) return;
+
+    personaReply(message).catch(() => {});
 
     // ---- canalul de numaratoare ----
     const counting = getChannel(message.guild, 'counting');

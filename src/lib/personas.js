@@ -11,6 +11,7 @@ import { settings, db } from './db.js';
 import { assetPath } from './assets.js';
 import { getChannel } from './guildMap.js';
 import { console_ } from './logger.js';
+import { CURIOSITY } from './personaBrain.js';
 
 export const PERSONAS = {
   razvan: { name: 'Răzvan', avatar: 'personas/razvan.png' },
@@ -144,9 +145,14 @@ export async function playConversation(channel, conversation) {
   }
 }
 
-/** O conversatie sau o replica singura, la intamplare. */
+/**
+ * Ce se joaca data viitoare: o conversatie, o replica singura sau o
+ * intrebare pusa canalului (la care pot raspunde si membrii reali).
+ */
 export function pickScene() {
-  if (Math.random() < 0.25) return [SOLO[Math.floor(Math.random() * SOLO.length)]];
+  const roll = Math.random();
+  if (roll < 0.20) return [SOLO[Math.floor(Math.random() * SOLO.length)]];
+  if (roll < 0.40) return [CURIOSITY[Math.floor(Math.random() * CURIOSITY.length)]];
   return CONVERSATIONS[Math.floor(Math.random() * CONVERSATIONS.length)];
 }
 

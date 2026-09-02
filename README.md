@@ -294,6 +294,16 @@ Emblemele apar automat pe fișa de jucător (`/profil vezi`) — la rank și ca 
 
 **Ambianță în chat** — `/ambianta pornit` aduce **6 personaje românești** (Răzvan, Ionuț, Ale, Bogdan, Denisa, Cristi), fiecare cu avatar și personalitate, care poartă conversații scurte despre MLBB în `💬︱general`. Vorbesc doar când e liniște de 15+ minute, ca să nu întrerupă o discuție reală, la un interval configurabil.
 
+**Personajele citesc chatul și răspund.** Nu e AI plătit — recunosc eroii din baza de date și cuvintele-cheie, apoi răspund cu informații reale:
+
+> **tu:** ce iau contra lancelot?
+> **Răzvan:** Khufra, Franco, Chou il incurca cel mai tare. plus vision, ca jumatate din problema e ca nu vezi de unde vine
+>
+> **tu:** ce build la hylos?
+> **Bogdan:** pe Hylos incepe cu Tough/Warrior Boots → Dominance Ice → Athena's Shield. emblema: Tank
+
+Cine răspunde depinde de subiect: Bogdan la tank-uri și sfaturi, Ale la mage, Denisa la marksman, Răzvan la jungle și fighteri. La întrebări răspund aproape mereu, la afirmații rar, și cel mult o dată pe minut ca să nu sufoce discuția. Din când în când pun și ele întrebări în chat. Se opresc cu `/ambianta raspunsuri activ:False`.
+
 > Discord marchează automat mesajele trimise prin webhook cu eticheta **APP** — personajele nu pot arăta ca membri reali, și nici nu asta e scopul. Sunt pentru atmosferă, nu ca să pară serverul mai populat decât e.
 
 **Conținut zilnic** — în fiecare zi botul postează singur în `🎯︱hero-tips` **eroul zilei** (rol, lane, counter-e, primii itemi) plus un sfat de joc, ca serverul să aibă viață și când nu scrie nimeni.
