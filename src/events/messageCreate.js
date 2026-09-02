@@ -3,7 +3,7 @@ import { runAutomod } from '../lib/automod.js';
 import { addXp, addMessage, handleLevelUp } from '../lib/leveling.js';
 import { db, settings } from '../lib/db.js';
 import { getChannel } from '../lib/guildMap.js';
-import { answerFor, maybeFollowUp, isQuestion, personaCalled } from '../lib/personaBrain.js';
+import { answerFor, maybeFollowUp, isQuestion, personaCalled, lastHeroIn } from '../lib/personaBrain.js';
 import { sendAs } from '../lib/personas.js';
 import { aiAnswer, aiEnabled } from '../lib/aiBrain.js';
 
@@ -38,7 +38,11 @@ async function personaReply(message) {
     if (Date.now() - last < 60_000) return;
   }
 
-  const answer = answerFor(message.content, { always: alwaysAnswer });
+  const answer = answerFor(message.content, {
+    always: alwaysAnswer,
+    lastHero: lastHeroIn(message.channel.id),
+    channelId: message.channel.id,
+  });
   if (!answer) return;
 
   // Regulile dau raspunsuri exacte pentru eroi si termeni — alea raman,

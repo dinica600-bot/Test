@@ -8,8 +8,12 @@ import { loadCommands } from './handlers/commandHandler.js';
 import { loadEvents } from './handlers/eventHandler.js';
 import { console_ } from './lib/logger.js';
 import { db } from './lib/db.js';
+import { acquireLock, releaseLock } from './lib/lock.js';
 
 assertConfig();
+
+// o singura copie a botului odata — altfel raspunde de doua ori la tot
+if (!acquireLock()) process.exit(1);
 
 const client = new Client({
   intents: [
@@ -35,11 +39,13 @@ await loadEvents(client);
 
 process.on('unhandledRejection', (err) => console_.error('Unhandled rejection:', err));
 process.on('uncaughtException', (err) => console_.error('Uncaught exception:', err));
+process.on('exit', releaseLock);
 
 for (const signal of ['SIGINT', 'SIGTERM']) {
   process.on(signal, () => {
     console_.info('Opresc botul, salvez datele...');
     db.flushAll();
+    releaseLock();
     client.destroy();
     process.exit(0);
   });

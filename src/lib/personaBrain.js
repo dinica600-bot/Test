@@ -155,7 +155,7 @@ function heroAnswer(hero, text) {
   }
 
   // "cum se joaca X"
-  if (/cum se (joaca|joacă)|cum (il|îl|o) joc|cum joci/.test(lower)) {
+  if (/cum se (joaca|joacă)|cum (il|îl|o) joc|cum joci|cum sa-?l joc|cum sa o joc|cum il bag/.test(lower)) {
     return { who, specific: true, text: `${hero.name}: ${build.tip}` };
   }
 
@@ -362,7 +362,31 @@ export const CURIOSITY = [
  * Ce raspunde cineva la mesajul primit. Returneaza null daca personajele
  * n-au ce sa spuna — mai bine tac decat sa raspunda aiurea.
  */
-export function answerFor(content, { always = false } = {}) {
+/**
+ * Ultimul erou discutat, pe canal — ca "cum sa-l joc?" sa stie despre cine
+ * e vorba. Se tine doar in memorie si expira in 10 minute.
+ */
+const recentHero = new Map();
+
+export function rememberHero(channelId, heroName) {
+  recentHero.set(channelId, { name: heroName, at: Date.now() });
+}
+
+export function lastHeroIn(channelId) {
+  const entry = recentHero.get(channelId);
+  if (!entry || Date.now() - entry.at > 10 * 60_000) return null;
+  return entry.name;
+}
+
+/**
+ * Cand mesajul se refera la eroul discutat anterior:
+ * fie prin pronume ("cum sa-l joc", "el e bun?"), fie printr-o intrebare
+ * clasica despre un erou fara sa-i spuna numele ("ce build?", "ce itemi?").
+ */
+const REFERS_BACK = /-l\b|-o\b|\b(îl|il|el|ea|asta|ăsta|acesta|aceasta|lui|ei)\b/i;
+const HERO_TOPIC = /cum se joac|cum (il|îl|o) joc|cum joci|ce build|ce itemi|ce iteme|ce iau contra|ce emblem|ce spell|e bun\??$/i;
+
+export function answerFor(content, { always = false, lastHero = null, channelId = null } = {}) {
   const text = content.replace(/<@!?\d+>/g, '').trim();
   const called = personaCalled(text);
   if (text.length < 3) {
@@ -384,7 +408,16 @@ export function answerFor(content, { always = false } = {}) {
   const recommendation = recommendAnswer(text);
   if (recommendation) return recommendation;
 
-  if (heroes.length) return heroAnswer(heroes[0], text);
+  if (heroes.length) {
+    if (channelId) rememberHero(channelId, heroes[0].name);
+    return heroAnswer(heroes[0], text);
+  }
+
+  // "cum sa-l joc?" dupa ce s-a vorbit despre Lancelot -> raspundem despre el
+  if (lastHero && (REFERS_BACK.test(text) || HERO_TOPIC.test(text))) {
+    const hero = findHero(lastHero);
+    if (hero) return heroAnswer(hero, text);
+  }
 
   const term = glossaryInText(text);
   if (term) {
