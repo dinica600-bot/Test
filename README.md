@@ -306,7 +306,7 @@ Pe lângă cei 125 de eroi, știu și **31 de termeni din joc** explicați pe ro
 > **tu:** ce build la hylos?
 > **Bogdan:** pe Hylos incepe cu Tough/Warrior Boots → Dominance Ice → Athena's Shield. emblema: Tank
 
-Cine răspunde depinde de subiect: Bogdan la tank-uri și sfaturi, Ale la mage, Denisa la marksman, Răzvan la jungle și fighteri. La întrebări răspund aproape mereu, la afirmații rar, și cel mult o dată pe minut ca să nu sufoce discuția. Din când în când pun și ele întrebări în chat. Se opresc cu `/ambianta raspunsuri activ:False`.
+Cine răspunde depinde de subiect: Bogdan la tank-uri și sfaturi, Ale la mage, Denisa la marksman, Răzvan la jungle și fighteri. **Îi poți striga și pe nume** (de exemplu `Bogdan, ce e anti heal?`) și îți răspunde exact acela, în orice canal. La întrebări răspund aproape mereu, la afirmații rar, și cel mult o dată pe minut ca să nu sufoce discuția. Din când în când pun și ele întrebări în chat. Se opresc cu `/ambianta raspunsuri activ:False`.
 
 ### Două creiere: reguli (gratis) și AI (opțional)
 
