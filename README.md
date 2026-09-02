@@ -441,6 +441,7 @@ Botul nu trebuie să ruleze în paralel — scriptul se conectează singur, face
 | Nu se dă XP / nu merge automod-ul | Activează **MESSAGE CONTENT INTENT** în Developer Portal. |
 | `📢︱anunțuri` a fost creat ca text normal | Canalele de tip announcement/stage cer **Community** activat pe server. Activează-l și rulează `/setup server` din nou. |
 | Statistica „Online" arată 0 | Activează **PRESENCE INTENT**. |
+| `getaddrinfo ENOTFOUND discord.com` | Telefonul n-are internet (WiFi conectat dar fără acces). Treci pe date mobile. Botul reîncearcă singur, cu pauze tot mai lungi. |
 | Ceva lipsește după setup | `/setup status` îți arată exact ce, apoi `/setup server` completează. |
 
 ---

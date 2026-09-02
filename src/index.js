@@ -45,4 +45,40 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
   });
 }
 
-await client.login(config.token);
+/**
+ * Conectarea, cu reincercari. Pe telefon netul mai cade (WiFi fara internet,
+ * trecere de pe date mobile pe WiFi), iar botul nu are motiv sa moara pentru
+ * atat — asteapta si incearca din nou.
+ */
+const NETWORK_ERRORS = ['ENOTFOUND', 'EAI_AGAIN', 'ECONNREFUSED', 'ETIMEDOUT', 'ECONNRESET', 'ENETUNREACH'];
+
+async function connect(attempt = 1) {
+  try {
+    await client.login(config.token);
+  } catch (err) {
+    const code = err.code ?? err.cause?.code;
+
+    if (err.message?.includes('TOKEN_INVALID') || err.status === 401) {
+      console_.error('Tokenul e gresit sau a fost resetat.');
+      console_.info('Ia-l din nou: Developer Portal → Bot → Reset Token, apoi ruleaza  npm run setup');
+      process.exit(1);
+    }
+
+    if (!NETWORK_ERRORS.includes(code)) {
+      console_.error('Nu m-am putut conecta:', err.message);
+      process.exit(1);
+    }
+
+    const wait = Math.min(60, 5 * 2 ** (attempt - 1));
+    console_.warn(
+      `Nu am internet (${code}). Verifica conexiunea — daca esti pe WiFi fara internet, ` +
+      'treci pe date mobile.',
+    );
+    console_.info(`Reincerc peste ${wait} secunde... (incercarea ${attempt})`);
+    await new Promise((resolve) => setTimeout(resolve, wait * 1000));
+    return connect(attempt + 1);
+  }
+  return null;
+}
+
+await connect();

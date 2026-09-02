@@ -82,4 +82,14 @@ client.once('clientReady', async () => {
 client.on('error', (err) => console.log(c.red(`Eroare: ${err.message}`)));
 
 console.log(c.dim('Ma conectez la Discord...'));
-await client.login(config.token);
+try {
+  await client.login(config.token);
+} catch (err) {
+  const code = err.code ?? err.cause?.code;
+  if (['ENOTFOUND', 'EAI_AGAIN', 'ENETUNREACH', 'ETIMEDOUT'].includes(code)) {
+    console.log(c.red('\n✘ Nu am internet.') + ' Daca esti pe WiFi fara internet, treci pe date mobile si incearca din nou.\n');
+  } else {
+    console.log(c.red(`\n✘ Nu m-am putut conecta: ${err.message}\n`));
+  }
+  process.exit(1);
+}
