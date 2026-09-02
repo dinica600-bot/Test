@@ -5,6 +5,7 @@ import { startGiveawayLoop } from '../components/giveaway.js';
 import { updateStats } from '../lib/stats.js';
 import { startBirthdayLoop } from '../lib/birthdays.js';
 import { startDailyLoop } from '../lib/daily.js';
+import { startAmbianceLoop } from '../lib/personas.js';
 import { settings } from '../lib/db.js';
 
 export default {
@@ -32,6 +33,7 @@ export default {
     startGiveawayLoop(client);
     startBirthdayLoop(client);
     startDailyLoop(client);
+    startAmbianceLoop(client);
 
     // canalele de statistici se actualizeaza la 10 minute (rate limit Discord)
     const refresh = () => client.guilds.cache.forEach((g) => updateStats(g).catch(() => {}));

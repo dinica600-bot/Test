@@ -292,6 +292,10 @@ Emblemele apar automat pe fișa de jucător (`/profil vezi`) — la rank și ca 
 
 **Community, ecran de bun venit și onboarding** — `/setup comunitate` activează modul Community (gratis), pune ecranul de bun venit cu scurtături spre canalele importante și configurează **onboarding-ul**: la intrarea pe server, noii membri primesc întrebările *„Ce lane joci?"*, *„Ce rank ai?"*, *„Ce notificări vrei?"* și primesc rolurile automat. Tot activarea Community transformă `📢︱anunțuri` în canal de anunțuri, pe care alte servere îl pot urmări.
 
+**Ambianță în chat** — `/ambianta pornit` aduce **6 personaje românești** (Răzvan, Ionuț, Ale, Bogdan, Denisa, Cristi), fiecare cu avatar și personalitate, care poartă conversații scurte despre MLBB în `💬︱general`. Vorbesc doar când e liniște de 15+ minute, ca să nu întrerupă o discuție reală, la un interval configurabil.
+
+> Discord marchează automat mesajele trimise prin webhook cu eticheta **APP** — personajele nu pot arăta ca membri reali, și nici nu asta e scopul. Sunt pentru atmosferă, nu ca să pară serverul mai populat decât e.
+
 **Conținut zilnic** — în fiecare zi botul postează singur în `🎯︱hero-tips` **eroul zilei** (rol, lane, counter-e, primii itemi) plus un sfat de joc, ca serverul să aibă viață și când nu scrie nimeni.
 
 ---
