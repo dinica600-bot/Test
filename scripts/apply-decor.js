@@ -44,8 +44,9 @@ client.once('clientReady', async () => {
   await guild.channels.fetch().catch(() => {});
   await guild.emojis.fetch().catch(() => {});
 
+  const OK = ['incarcat', 'postat', 'pus'];
   const step = (name, state) => {
-    const mark = state === 'incarcat' || state === 'postat' ? c.green('✔')
+    const mark = OK.includes(state) ? c.green('✔')
       : state === 'exista deja' ? c.dim('•') : c.red('✘');
     console.log(`   ${mark} ${name.padEnd(14)} ${c.dim(state)}`);
   };
