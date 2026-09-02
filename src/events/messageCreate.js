@@ -15,29 +15,41 @@ const lastReply = new Map();
  * de o data pe minut, ca sa nu sufoce discutia.
  */
 async function personaReply(message) {
-  if (settings.get(message.guild.id, 'ambiance.enabled', false) !== true) return;
-  if (settings.get(message.guild.id, 'ambiance.reply', true) === false) return;
+  const gid = message.guild.id;
+  if (settings.get(gid, 'ambiance.reply', true) === false) return;
 
-  const channelId = settings.get(message.guild.id, 'ambiance.channel');
-  const allowed = channelId ?? getChannel(message.guild, 'general')?.id;
-  if (message.channel.id !== allowed) return;
+  const askChannel = getChannel(message.guild, 'ask');
+  const inAskChannel = askChannel && message.channel.id === askChannel.id;
+  const mentioned = message.mentions.users.has(message.client.user.id);
 
-  const last = lastReply.get(message.channel.id) ?? 0;
-  if (Date.now() - last < 60_000) return;
+  // In canalul de intrebari si cand esti chemat cu tag, raspund mereu si
+  // imediat — pentru asta exista. In rest, doar daca ambianta e pornita.
+  const alwaysAnswer = inAskChannel || mentioned;
 
-  const answer = answerFor(message.content);
+  if (!alwaysAnswer) {
+    if (settings.get(gid, 'ambiance.enabled', false) !== true) return;
+    const channelId = settings.get(gid, 'ambiance.channel');
+    const allowed = channelId ?? getChannel(message.guild, 'general')?.id;
+    if (message.channel.id !== allowed) return;
+
+    const last = lastReply.get(message.channel.id) ?? 0;
+    if (Date.now() - last < 60_000) return;
+  }
+
+  const answer = answerFor(message.content, { always: alwaysAnswer });
   if (!answer) return;
-  // la afirmatii raspund doar din cand in cand
-  if (!isQuestion(message.content) && Math.random() > 0.35) return;
+  // la afirmatii raspund doar din cand in cand (nu si in canalul de ajutor)
+  if (!alwaysAnswer && !isQuestion(message.content) && Math.random() > 0.35) return;
 
   lastReply.set(message.channel.id, Date.now());
 
-  await new Promise((r) => setTimeout(r, 2000 + Math.random() * 3000));
+  // in canalul de ajutor raspund repede; in chat obisnuit, mai lejer
+  await new Promise((r) => setTimeout(r, alwaysAnswer ? 400 : 2000 + Math.random() * 3000));
   await message.channel.sendTyping().catch(() => {});
-  await new Promise((r) => setTimeout(r, 1200 + answer.text.length * 35));
+  await new Promise((r) => setTimeout(r, alwaysAnswer ? 900 : 1200 + answer.text.length * 35));
   await sendAs(message.channel, answer.who, answer.text);
 
-  const followUp = maybeFollowUp(answer.who);
+  const followUp = alwaysAnswer ? null : maybeFollowUp(answer.who);
   if (followUp) {
     await new Promise((r) => setTimeout(r, 5000 + Math.random() * 5000));
     await message.channel.sendTyping().catch(() => {});

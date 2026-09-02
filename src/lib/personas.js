@@ -11,6 +11,8 @@ import { settings, db } from './db.js';
 import { assetPath } from './assets.js';
 import { getChannel } from './guildMap.js';
 import { console_ } from './logger.js';
+import { embeds } from './embeds.js';
+import { GLOSSARY } from './personaBrain.js';
 import { CURIOSITY } from './personaBrain.js';
 
 export const PERSONAS = {
@@ -204,4 +206,41 @@ export function startAmbianceLoop(client) {
 
   setTimeout(tick, 60_000);
   setInterval(tick, 5 * 60_000).unref?.();
+}
+
+/** Mesajul de prezentare pentru canalul de intrebari. */
+export function askPanel() {
+  const embed = embeds
+    .custom(0x38bdf8)
+    .setTitle('🙋 Întreabă orice despre Mobile Legends')
+    .setDescription(
+      'Ești nou în joc sau nu înțelegi un termen? **Scrie aici și primești răspuns pe loc.**\n' +
+      'Nicio întrebare nu e prea de începător — toți am fost acolo.\n\n' +
+      '**Poți întreba lucruri ca:**\n' +
+      '```\n' +
+      'ce iau contra fanny?\n' +
+      'ce build la lancelot?\n' +
+      'cum se joaca esmeralda?\n' +
+      'ce inseamna gank?\n' +
+      'ce e anti heal?\n' +
+      '```',
+    )
+    .addFields(
+      {
+        name: '🧠 Cine îți răspunde',
+        value: Object.values(PERSONAS).map((p) => p.name).join(' • ') +
+          '\n_Fiecare se pricepe la altceva: Bogdan la tank-uri și sfaturi, Ale la mage, ' +
+          'Denisa la marksman, Răzvan la jungle și fighteri._',
+      },
+      {
+        name: '📖 Ce știu',
+        value: `**125 de eroi** cu counter-e, build-uri și lane-uri, plus **${Object.keys(GLOSSARY).length} termeni** din joc explicați pe românește.`,
+      },
+      {
+        name: '⚡ Vrei răspunsul complet?',
+        value: 'Comenzile `/hero <nume>`, `/counter <erou>` și `/build <erou>` îți dau toate detaliile deodată.',
+      },
+    )
+    .setFooter({ text: 'Răspunsurile vin de la boți — Discord îi marchează cu APP. Informațiile sunt însă reale.' });
+  return { embeds: [embed] };
 }

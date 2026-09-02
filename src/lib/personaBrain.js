@@ -107,6 +107,56 @@ function heroAnswer(hero, text) {
   };
 }
 
+
+/**
+ * Dictionar de termeni — cel mai mare blocaj pentru cine e nou in MLBB
+ * nu sunt eroii, ci jargonul. "ce inseamna gank?" primeste raspuns real.
+ */
+export const GLOSSARY = {
+  gank: 'un atac surpriza pe un lane, de obicei al jungler-ului. vine din tufe si te prinde cand ai viata putina',
+  'split push': 'sa impingi singur un lane departe de echipa, ca sa-i tragi pe ei acolo si sa-ti lasi coechipierii sa ia obiective',
+  rotatie: 'mutarea de pe un lane pe altul ca sa ajuti. rotatiile bune castiga meciuri mai mult decat mecanica',
+  farm: 'omorarea minionilor si a monstrilor din jungla ca sa faci aur si experienta',
+  feed: 'cand mori des si ii faci pe adversari mai puternici. "nu da feed" = nu muri degeaba',
+  tilt: 'cand te enervezi si incepi sa joci prost din nervi. cel mai bun lucru: pauza 10 minute',
+  meta: 'eroii si strategiile care merg cel mai bine in patch-ul curent',
+  buff: 'cand un erou primeste imbunatatiri la update. si monstrii albastri/rosii din jungla se numesc tot buff',
+  nerf: 'cand un erou e slabit la update',
+  cc: 'crowd control — abilitati care te opresc: stun, knock-up, suppress, slow. cine are CC incepe fight-ul',
+  burst: 'damage foarte mare intr-o secunda. assassinii si unii mage au burst',
+  poke: 'lovituri de la distanta care rod viata inamicului inainte de fight',
+  kite: 'sa lovesti si sa te retragi in acelasi timp, ca sa nu te prinda. esential pentru marksman',
+  carry: 'eroul care duce meciul in spate, de obicei marksman-ul sau jungler-ul',
+  minion: 'soldatii care ies automat pe lane-uri',
+  turela: 'turnul care apara baza. sub ea esti in siguranta, dar nu la infinit',
+  lord: 'monstrul mare de jos, de la minutul 8. cine il ia primeste un minion urias care impinge lane-ul',
+  turtle: 'monstrul de sus, apare de la minutul 2. da aur si experienta la toata echipa',
+  emblema: 'setul de bonusuri pe care il alegi inainte de meci. da statistici in plus si un talent special',
+  'battle spell': 'abilitatea suplimentara aleasa inainte de meci: flicker, retribution, purify etc.',
+  retribution: 'spell-ul obligatoriu pentru jungler — loveste monstrii mai tare si iti da aur',
+  flicker: 'teleportare scurta. cel mai folosit spell din joc, si pentru scapat si pentru prins',
+  savage: 'cand omori toti cei 5 adversari singur, la rand',
+  maniac: 'cand omori 4 adversari la rand',
+  mvp: 'cel mai bun jucator al meciului, dupa scorul jocului',
+  winrate: 'procentul de meciuri castigate. "wr" pe scurt',
+  draft: 'faza de ban si pick de la inceputul meciului, in ranked de la epic in sus',
+  'gold lane': 'lane-ul de jos, unde sta marksman-ul. e "gold" pentru ca primeste cel mai mult aur',
+  'exp lane': 'lane-ul de sus, unde sta un fighter care rezista singur',
+  roam: 'rolul care nu sta pe un lane, ci se plimba si ajuta. de obicei tank sau support',
+  jungle: 'zona dintre lane-uri, cu monstri. jungler-ul face farm acolo si da gank',
+};
+
+const GLOSSARY_KEYS = Object.keys(GLOSSARY).sort((a, b) => b.length - a.length);
+
+/** Cauta un termen de dictionar in mesaj. */
+function glossaryInText(text) {
+  const lower = text.toLowerCase();
+  return GLOSSARY_KEYS.find((term) => {
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(^|[^a-zăâîșț])${escaped}([^a-zăâîșț]|$)`, 'i').test(lower);
+  }) ?? null;
+}
+
 /** Reguli pe cuvinte-cheie, pentru ce nu tine de un erou anume. */
 const RULES = [
   {
@@ -188,26 +238,36 @@ export const CURIOSITY = [
  * Ce raspunde cineva la mesajul primit. Returneaza null daca personajele
  * n-au ce sa spuna — mai bine tac decat sa raspunda aiurea.
  */
-export function answerFor(content) {
-  const text = content.trim();
-  if (text.length < 3) return null;
+export function answerFor(content, { always = false } = {}) {
+  const text = content.replace(/<@!?\d+>/g, '').trim();
+  if (text.length < 3) {
+    return always ? { who: 'bogdan', text: 'zi, ce vrei sa stii? scrie numele unui erou sau un termen din joc' } : null;
+  }
 
   const hero = heroInText(text);
   if (hero) return heroAnswer(hero, text);
 
+  const term = glossaryInText(text);
+  if (term) {
+    return {
+      who: pick(['bogdan', 'ale', 'razvan']),
+      text: `**${term}** = ${GLOSSARY[term]}`,
+    };
+  }
+
   for (const rule of RULES) {
-    if (rule.test.test(text)) return { who: pick(rule.who), replies: null, text: pick(rule.replies) };
+    if (rule.test.test(text)) return { who: pick(rule.who), text: pick(rule.replies) };
   }
 
   // intrebare generala, fara subiect recunoscut
-  if (isQuestion(text)) {
+  if (isQuestion(text) || always) {
     return {
       who: pick(['bogdan', 'razvan', 'ale']),
       text: pick([
+        'nu sunt sigur ca am inteles. incearca asa: "ce iau contra fanny?", "ce build la lancelot?", "ce inseamna gank?"',
+        'da-mi un nume de erou sau un termen din joc si iti zic tot ce stiu',
         'depinde mult de draft si de ce joaca ei. da mai multe detalii',
-        'buna intrebare. eu as zice sa incerci si sa vezi ce iese, in mlbb multe se invata din meciuri',
-        'pai... ce eroi aveau in echipa? asta schimba raspunsul',
-        'incearca /hero cu numele eroului, iti zice botul mai bine ca mine 😄',
+        'pentru detalii complete despre un erou ai si comanda `/hero <nume>`',
       ]),
     };
   }

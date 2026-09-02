@@ -294,6 +294,10 @@ Emblemele apar automat pe fișa de jucător (`/profil vezi`) — la rank și ca 
 
 **Ambianță în chat** — `/ambianta pornit` aduce **6 personaje românești** (Răzvan, Ionuț, Ale, Bogdan, Denisa, Cristi), fiecare cu avatar și personalitate, care poartă conversații scurte despre MLBB în `💬︱general`. Vorbesc doar când e liniște de 15+ minute, ca să nu întrerupă o discuție reală, la un interval configurabil.
 
+**Canal dedicat pentru începători** — `🙋︱întreabă-orice` (în categoria MOBILE LEGENDS). Acolo personajele răspund **la orice mesaj, imediat**, fără să aștepte o întrebare formulată perfect. E gândit pentru cine nu știe jocul și vrea răspuns pe loc. Le poți chema și cu tag (`@Blood×Diamonds`) în orice canal.
+
+Pe lângă cei 125 de eroi, știu și **31 de termeni din joc** explicați pe românește — gank, split push, kite, CC, lord, turtle, retribution, savage, emblemă, meta și restul jargonului care blochează orice începător.
+
 **Personajele citesc chatul și răspund.** Nu e AI plătit — recunosc eroii din baza de date și cuvintele-cheie, apoi răspund cu informații reale:
 
 > **tu:** ce iau contra lancelot?

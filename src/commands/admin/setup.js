@@ -11,6 +11,7 @@ import { console_ } from '../../lib/logger.js';
 import { COLORS, config } from '../../config/config.js';
 import { verifyPanel, rulesMessage } from '../../components/verify.js';
 import { applyRoleStyle, countStyled } from '../../lib/roleStyles.js';
+import { askPanel } from '../../lib/personas.js';
 import { selfRolePanels } from '../../components/selfroles.js';
 import { ticketPanel } from '../../components/tickets.js';
 import { tryoutPanel } from '../../components/tryout.js';
@@ -235,6 +236,7 @@ async function postPanels(guild, report) {
   }
 
   await send('verify', verifyPanel());
+  await send('ask', askPanel());
   await send('ticket-panel', ticketPanel());
   await send('how-to-apply', tryoutPanel());
 

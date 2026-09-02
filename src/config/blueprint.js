@@ -215,6 +215,7 @@ export const CATEGORIES = [
       { key: 'builds', name: '🛠️︱builds-embleme', type: 'text', topic: 'Item build-uri, embleme, spell-uri.' },
       { key: 'meta', name: '📊︱meta-patch', type: 'text', topic: 'Discutii despre patch notes si meta actuala.' },
       { key: 'tips', name: '🎯︱hero-tips', type: 'text', topic: 'Tips & tricks pe eroi. /hero iti da info rapid.' },
+      { key: 'ask', name: '🙋︱întreabă-orice', type: 'text', topic: 'Nu stii ceva din joc? Intreaba aici si primesti raspuns pe loc. Nicio intrebare nu e prea de inceput.' },
       { key: 'rankup', name: '📈︱rank-progress', type: 'text', topic: 'Arata-ti progresul spre Mythical Glory.' },
       { key: 'wins', name: '📸︱victorii', type: 'text', topic: 'Screenshot-uri cu MVP si win-uri.' },
     ],

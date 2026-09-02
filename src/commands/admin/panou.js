@@ -4,6 +4,7 @@ import { verifyPanel, rulesMessage } from '../../components/verify.js';
 import { selfRolePanels } from '../../components/selfroles.js';
 import { ticketPanel } from '../../components/tickets.js';
 import { tryoutPanel } from '../../components/tryout.js';
+import { askPanel } from '../../lib/personas.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -21,6 +22,7 @@ export default {
         { name: '🎭 Self-roles', value: 'roles' },
         { name: '🎫 Tickete', value: 'ticket' },
         { name: '🎯 Tryout / aplicare', value: 'tryout' },
+        { name: '🙋 Întreabă orice (ajutor MLBB)', value: 'ask' },
       ))
     .addChannelOption((o) => o
       .setName('canal')
@@ -39,6 +41,7 @@ export default {
       roles: selfRolePanels(interaction.guild),
       ticket: [ticketPanel()],
       tryout: [tryoutPanel()],
+      ask: [askPanel()],
     }[type];
 
     for (const payload of payloads) await channel.send(payload);
