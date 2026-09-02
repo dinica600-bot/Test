@@ -118,6 +118,7 @@ export const ROLES = [
   { key: 'ping_giveaway', name: '🎁 Giveaway', color: 0x94a3b8, hoist: false, mentionable: true, group: 'ping', perms: [] },
   { key: 'ping_event', name: '🎉 Evenimente', color: 0x94a3b8, hoist: false, mentionable: true, group: 'ping', perms: [] },
   { key: 'ping_lfg', name: '🎮 LFG', color: 0x94a3b8, hoist: false, mentionable: true, group: 'ping', perms: [] },
+  { key: 'ping_live', name: '🔴 Live', color: 0xff0033, hoist: false, mentionable: true, group: 'ping', perms: [] },
 
   // ---------- NIVELE (se dau automat de sistemul de XP) ----------
   { key: 'lvl_5', name: '🔰 Lv.5 — Recrut', color: 0x8d99ae, hoist: false, mentionable: false, group: 'level', level: 5, perms: [] },
@@ -151,9 +152,9 @@ export const SELF_ROLE_GROUPS = [
     exclusive: true,
   },
   {
-    id: 'ping', label: 'Notificări', emoji: '🔔', max: 6,
+    id: 'ping', label: 'Notificări', emoji: '🔔', max: 7,
     description: 'Alege pentru ce vrei sa fii mentionat.',
-    roles: ['ping_announce', 'ping_scrim', 'ping_tournament', 'ping_giveaway', 'ping_event', 'ping_lfg'],
+    roles: ['ping_announce', 'ping_scrim', 'ping_tournament', 'ping_giveaway', 'ping_event', 'ping_lfg', 'ping_live'],
   },
 ];
 
@@ -187,6 +188,8 @@ export const CATEGORIES = [
       { key: 'events', name: '🎉︱evenimente', type: 'text', readonly: true, topic: 'Turnee, giveaway-uri, custom room nights.' },
       { key: 'roster-board', name: '🏅︱roster', type: 'text', readonly: true, topic: 'Line-up-ul oficial Blood×Diamonds.' },
       { key: 'partners', name: '🤝︱parteneri', type: 'text', readonly: true, topic: 'Squad-uri aliate si colaborari.' },
+      { key: 'giveaway', name: '🎁︱giveaway', type: 'text', readonly: true, topic: 'Concursuri si premii. Apasa butonul de participare — botul alege castigatorii singur.' },
+      { key: 'live', name: '📱︱live-tiktok', type: 'text', readonly: true, topic: 'Anunturi cand cineva din squad intra live. Ia-ti rolul 🔴 Live ca sa primesti notificare.' },
       { key: 'levelup', name: '⭐︱level-up', type: 'text', readonly: true, topic: 'Aici anunta botul cand cineva urca in nivel.' },
     ],
   },

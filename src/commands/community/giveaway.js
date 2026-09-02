@@ -2,7 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, MessageFlags, ChannelType } f
 import { embeds } from '../../lib/embeds.js';
 import { db } from '../../lib/db.js';
 import { giveawayEmbed, giveawayButtons, endGiveaway } from '../../components/giveaway.js';
-import { getRole } from '../../lib/guildMap.js';
+import { getRole, getChannel } from '../../lib/guildMap.js';
 
 const DURATIONS = [
   { name: '10 minute', value: 10 },
@@ -56,7 +56,9 @@ export default {
     }
 
     const minutes = interaction.options.getInteger('durata');
-    const channel = interaction.options.getChannel('canal') ?? interaction.channel;
+    const channel = interaction.options.getChannel('canal')
+      ?? getChannel(interaction.guild, 'giveaway')
+      ?? interaction.channel;
     const required = interaction.options.getRole('rol_necesar');
 
     const g = {

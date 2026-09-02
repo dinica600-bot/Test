@@ -6,6 +6,7 @@ import { updateStats } from '../lib/stats.js';
 import { startBirthdayLoop } from '../lib/birthdays.js';
 import { startDailyLoop } from '../lib/daily.js';
 import { startAmbianceLoop } from '../lib/personas.js';
+import { startLiveWatcher } from '../lib/tiktok.js';
 import { settings } from '../lib/db.js';
 
 export default {
@@ -34,6 +35,7 @@ export default {
     startBirthdayLoop(client);
     startDailyLoop(client);
     startAmbianceLoop(client);
+    startLiveWatcher(client);
 
     // canalele de statistici se actualizeaza la 10 minute (rate limit Discord)
     const refresh = () => client.guilds.cache.forEach((g) => updateStats(g).catch(() => {}));

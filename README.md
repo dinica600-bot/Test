@@ -326,6 +326,17 @@ Costă ~0,5 cenți pe răspuns (≈1 dolar la 200 de răspunsuri), iar `AI_MAX_P
 
 > Discord marchează automat mesajele trimise prin webhook cu eticheta **APP** — personajele nu pot arăta ca membri reali, și nici nu asta e scopul. Sunt pentru atmosferă, nu ca să pară serverul mai populat decât e.
 
+**Live pe TikTok** — canal dedicat `📱︱live-tiktok` și rolul `🔴 Live` pentru notificări. Două moduri:
+
+| | Cum merge | Sigur? |
+|---|---|---|
+| `/live anunta` | streamerul dă comanda când intră live; botul postează embed și dă ping rolului | ✅ întotdeauna |
+| automat | `/live adauga-cont` urmărește conturi și anunță singur, verificând din 3 în 3 minute | ⚠️ neoficial |
+
+Verificarea automată cere `npm install tiktok-live-connector` — TikTok **nu are API public** pentru starea de live, așa că se folosește o bibliotecă neoficială care se poate strica atunci când TikTok schimbă ceva. Dacă nu e instalată sau dă eroare, botul merge normal și rămâne comanda manuală. `/live conturi` îți arată pe ce mod ești.
+
+**Canal de giveaway** — `🎁︱giveaway`, unde `/giveaway start` postează implicit.
+
 **Conținut zilnic** — în fiecare zi botul postează singur în `🎯︱hero-tips` **eroul zilei** (rol, lane, counter-e, primii itemi) plus un sfat de joc, ca serverul să aibă viață și când nu scrie nimeni.
 
 ---
