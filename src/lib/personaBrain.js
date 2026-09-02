@@ -298,6 +298,54 @@ const RULES = [
   },
 ];
 
+
+/**
+ * Cand strigi un personaj pe nume, el raspunde.
+ * "Ale" e si cuvant romanesc ("ale mele"), asa ca il acceptam doar la
+ * inceputul mesajului sau scris cu majuscula.
+ */
+const PERSONA_NAMES = {
+  razvan: /r[ăa]zvan/i,
+  ionut: /ionu[țt]/i,
+  ale: /ale(xandra)?/i,
+  bogdan: /bogdan/i,
+  denisa: /denisa/i,
+  cristi: /cristi/i,
+};
+
+const ACK = {
+  razvan: ['zi', 'sunt aici, ce e?', 'da?'],
+  ionut: ['da? 😄', 'aici sunt', 'ma cheama cineva?'],
+  ale: ['zi', 'ce e?', 'aici'],
+  bogdan: ['spune', 'aici sunt, cu ce te ajut?', 'zi, ce nu iti iese?'],
+  denisa: ['zi', 'ce?', 'sunt aici'],
+  cristi: ['prezent 🫡', 'zi, ce ai patit', 'aici, ca de obicei'],
+};
+
+/** Ce personaj a fost strigat, daca a fost. */
+export function personaCalled(text) {
+  const clean = text.trim();
+  for (const [key, re] of Object.entries(PERSONA_NAMES)) {
+    const word = new RegExp(`(^|[^a-zăâîșț])${re.source}([^a-zăâîșț]|$)`, 'i');
+    if (!word.test(clean)) continue;
+    // "ale" e si cuvant obisnuit: il acceptam doar scris cu majuscula
+    // sau la inceputul mesajului
+    if (key === 'ale') {
+      const matched = (clean.match(word)?.[0] ?? '').replace(/^[^a-zA-ZăâîșțĂÂÎȘȚ]+/, '');
+      const capitalized = /^[A-ZĂÂÎȘȚ]/.test(matched);
+      const atStart = new RegExp(`^${re.source}\\b`, 'i').test(clean);
+      if (!capitalized && !atStart) continue;
+    }
+    return key;
+  }
+  return null;
+}
+
+/** Raspuns scurt cand esti strigat si nu s-a intrebat nimic anume. */
+export function ackFrom(persona) {
+  return { who: persona, specific: false, text: pick(ACK[persona] ?? ACK.bogdan) };
+}
+
 /** Intrebari pe care le pun ele, cand vor sa porneasca o discutie. */
 export const CURIOSITY = [
   { who: 'ionut', text: 'voi ce main aveti? incerc sa ma decid si nu pot' },
@@ -316,8 +364,16 @@ export const CURIOSITY = [
  */
 export function answerFor(content, { always = false } = {}) {
   const text = content.replace(/<@!?\d+>/g, '').trim();
+  const called = personaCalled(text);
   if (text.length < 3) {
     return always ? { who: 'bogdan', text: 'zi, ce vrei sa stii? scrie numele unui erou sau un termen din joc' } : null;
+  }
+
+  // daca a fost strigat cineva anume, el preia raspunsul
+  if (called) {
+    const topical = answerFor(text.replace(PERSONA_NAMES[called], '').trim(), { always: false });
+    if (topical) return { ...topical, who: called };
+    return ackFrom(called);
   }
 
   const heroes = heroesInText(text);

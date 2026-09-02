@@ -3,7 +3,7 @@ import { runAutomod } from '../lib/automod.js';
 import { addXp, addMessage, handleLevelUp } from '../lib/leveling.js';
 import { db, settings } from '../lib/db.js';
 import { getChannel } from '../lib/guildMap.js';
-import { answerFor, maybeFollowUp, isQuestion } from '../lib/personaBrain.js';
+import { answerFor, maybeFollowUp, isQuestion, personaCalled } from '../lib/personaBrain.js';
 import { sendAs } from '../lib/personas.js';
 import { aiAnswer, aiEnabled } from '../lib/aiBrain.js';
 
@@ -22,10 +22,11 @@ async function personaReply(message) {
   const askChannel = getChannel(message.guild, 'ask');
   const inAskChannel = askChannel && message.channel.id === askChannel.id;
   const mentioned = message.mentions.users.has(message.client.user.id);
+  const called = Boolean(personaCalled(message.content));
 
-  // In canalul de intrebari si cand esti chemat cu tag, raspund mereu si
-  // imediat — pentru asta exista. In rest, doar daca ambianta e pornita.
-  const alwaysAnswer = inAskChannel || mentioned;
+  // In canalul de intrebari, la tag si cand esti strigat pe nume raspund
+  // mereu si imediat. In rest, doar daca ambianta e pornita.
+  const alwaysAnswer = inAskChannel || mentioned || called;
 
   if (!alwaysAnswer) {
     if (settings.get(gid, 'ambiance.enabled', false) !== true) return;
