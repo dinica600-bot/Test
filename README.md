@@ -402,6 +402,37 @@ Fă-i backup din când în când — e tot ce trebuie salvat.
 
 ## 🧯 Probleme frecvente
 
+<details>
+<summary><b>„Unknown interaction" / DiscordAPIError 10062</b></summary>
+
+Discord dă botului **3 secunde** ca să confirme o comandă `/`. Dacă botul rulează pe un telefon pe care Android l-a încetinit, sau conexiunea e slabă, fereastra se pierde și comanda eșuează înainte să apuce să facă ceva. **Nu se aplică nimic pe jumătate** — serverul rămâne neatins.
+
+Botul îți scrie în consolă cât a durat livrarea: `comanda a ajuns la bot dupa 2840ms`. Peste ~2000ms înseamnă că întârzierea e pe drum, nu în cod.
+
+**Ce faci:**
+1. Scoate aplicația din adormire (pe Samsung: *Baterie → Limite de utilizare în fundal → Aplicații care nu adorm niciodată*)
+2. Rulează `termux-wake-lock` înainte de `npm start`
+3. Dă comenzile grele din terminal, nu din Discord — vezi mai jos
+
+</details>
+
+<details>
+<summary><b>Comenzi grele fără limita de 3 secunde</b></summary>
+
+Când interacțiunile expiră constant, aplică decorul direct din terminal. Nu folosește nicio interacțiune, deci n-are nicio limită de timp:
+
+```bash
+npm run decor          # icon + avatar + emoji + banere
+npm run decor emoji    # doar emoji-urile
+npm run decor banere   # doar banerele
+npm run decor icon
+```
+
+Botul nu trebuie să ruleze în paralel — scriptul se conectează singur, face treaba cu progres pe ecran și iese.
+</details>
+
+
+
 | Problemă | Rezolvare |
 |---|---|
 | „Missing Permissions" la `/setup` | Rolul botului trebuie să fie **Administrator** și **cât mai sus** în listă. |

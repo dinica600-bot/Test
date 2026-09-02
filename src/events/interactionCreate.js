@@ -27,6 +27,17 @@ export default {
 
     if (!interaction.isChatInputCommand()) return null;
 
+    // Diagnostic: cat a durat pana ne-a ajuns comanda de la Discord.
+    // Daca aici vezi peste ~2000ms, intarzierea e pe drum (retea/telefon
+    // incetinit), nu in cod — de aceea expira interactiunile.
+    const age = Date.now() - interaction.createdTimestamp;
+    if (age > 1500) {
+      console_.warn(
+        `/${interaction.commandName}: comanda a ajuns la bot dupa ${age}ms ` +
+        `(Discord acorda 3000ms). ${age > 2800 ? 'Aproape sigur va expira.' : 'Marja e mica.'}`,
+      );
+    }
+
     const command = client.commands.get(interaction.commandName);
     if (!command) return null;
 
