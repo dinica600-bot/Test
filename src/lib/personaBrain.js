@@ -6,7 +6,7 @@
  * are sens. Cand mesajul mentioneaza un erou, raspunsul e construit din
  * datele reale (counter-e, itemi, lane), nu inventat.
  */
-import { HEROES, findHero, counteredBy, BUILD_TEMPLATES } from '../data/heroes.js';
+import { HEROES, findHero, counteredBy, BUILD_TEMPLATES, heroesBy } from '../data/heroes.js';
 
 /** Cine raspunde, in functie de rolul eroului discutat. */
 const EXPERT = {
@@ -51,6 +51,78 @@ function heroInText(text) {
   return null;
 }
 
+
+/** Toti eroii mentionati in mesaj, in ordinea aparitiei. */
+function heroesInText(text) {
+  const found = [];
+  for (const { hero, re, exact } of HERO_PATTERNS) {
+    if (!re.test(text)) continue;
+    if (AMBIGUOUS.has(hero.name) && !exact.test(text) && !GAME_CONTEXT.test(text)) continue;
+    if (!found.includes(hero)) found.push(hero);
+  }
+  return found;
+}
+
+/** "fanny sau ling?" — comparatie intre doi eroi. */
+function compareAnswer(a, b) {
+  const who = EXPERT[a.role] ?? 'bogdan';
+  const aBeatsB = b.counters?.some((c) => c.toLowerCase() === a.name.toLowerCase());
+  const bBeatsA = a.counters?.some((c) => c.toLowerCase() === b.name.toLowerCase());
+
+  if (aBeatsB && !bBeatsA) return { who, specific: true, text: `intre ei, **${a.name}** il incurca pe ${b.name}. daca joci contra lui, ${a.name} e alegerea` };
+  if (bBeatsA && !aBeatsB) return { who, specific: true, text: `**${b.name}** il bate pe ${a.name} in duel direct` };
+
+  const easier = a.diff === b.diff ? null : [a, b].sort((x, y) => ['Ușor', 'Mediu', 'Greu', 'Foarte greu'].indexOf(x.diff) - ['Ușor', 'Mediu', 'Greu', 'Foarte greu'].indexOf(y.diff))[0];
+  return {
+    who,
+    specific: true,
+    text: `depinde de ce iti trebuie: ${a.name} e ${a.role.toLowerCase()} pe ${a.lanes.join('/')}, ${b.name} e ${b.role.toLowerCase()} pe ${b.lanes.join('/')}.`
+      + (easier ? ` ${easier.name} e mai usor de invatat (${easier.diff.toLowerCase()})` : ' ambii la fel de grei'),
+  };
+}
+
+const LANE_WORDS = {
+  gold: /gold\s*lane|marksman|mm\b/i,
+  exp: /exp\s*lane|top\s*lane/i,
+  mid: /mid\s*lane|\bmid\b/i,
+  jungle: /jungl/i,
+  roam: /roam|tank\b|support/i,
+};
+
+/** "ce erou sa joc pe mid?" / "eroi usori pentru incepatori" */
+function recommendAnswer(text) {
+  const lower = text.toLowerCase();
+  if (!/ce erou|ce eroi|ce sa joc|ce imi recomanzi|recomanzi|cu ce sa incep|pentru incepatori|usor de jucat/i.test(lower)) return null;
+
+  const lane = Object.entries(LANE_WORDS).find(([, re]) => re.test(lower))?.[0] ?? null;
+  const beginner = /incepator|început|usor|ușor|nou in joc|abia am inceput/i.test(lower);
+
+  let pool = heroesBy(lane ? { lane } : {});
+  if (beginner) pool = pool.filter((h) => h.diff === 'Ușor') .concat(pool.filter((h) => h.diff === 'Mediu')).slice(0, 40);
+  if (!pool.length) return null;
+
+  const picks = [];
+  const seen = new Set();
+  for (const hero of pool.sort(() => Math.random() - 0.5)) {
+    if (seen.has(hero.name)) continue;
+    seen.add(hero.name);
+    picks.push(hero);
+    if (picks.length === 3) break;
+  }
+
+  const who = lane ? (EXPERT[picks[0].role] ?? 'bogdan') : 'bogdan';
+  const ORDER = ['Ușor', 'Mediu', 'Greu', 'Foarte greu'];
+  picks.sort((x, y) => ORDER.indexOf(x.diff) - ORDER.indexOf(y.diff));
+  const list = picks.map((h) => `**${h.name}** (${h.diff.toLowerCase()})`).join(', ');
+  return {
+    who,
+    specific: true,
+    text: lane
+      ? `pe ${lane} iti recomand ${list}. incepe cu unul singur si joaca-l pana il stii bine`
+      : `incearca ${list}. alege unul si joaca-l 30-40 de meciuri inainte sa schimbi`,
+  };
+}
+
 /** Raspuns despre un erou, construit din datele reale. */
 function heroAnswer(hero, text) {
   const who = EXPERT[hero.role] ?? 'bogdan';
@@ -62,6 +134,7 @@ function heroAnswer(hero, text) {
     const counters = hero.counters?.slice(0, 3).join(', ');
     return {
       who,
+      specific: true,
       text: counters
         ? pick([
           `contra lui ${hero.name} merg bine ${counters}. si nu te lasa prins singur pe lane`,
@@ -76,19 +149,21 @@ function heroAnswer(hero, text) {
   if (/build|itemi|iteme|ce (iau|construiesc|pun) pe|emblem/.test(lower)) {
     return {
       who,
+      specific: true,
       text: `pe ${hero.name} incepe cu ${build.items.slice(0, 3).join(' → ')}. emblema: ${build.emblem.split('—')[0].trim()}`,
     };
   }
 
   // "cum se joaca X"
   if (/cum se (joaca|joacă)|cum (il|îl|o) joc|cum joci/.test(lower)) {
-    return { who, text: `${hero.name}: ${build.tip}` };
+    return { who, specific: true, text: `${hero.name}: ${build.tip}` };
   }
 
   // "e bun X?" / "merita X"
   if (/e bun|merita|merită|cum e|bagi/.test(lower)) {
     return {
       who,
+      specific: true,
       text: pick([
         `${hero.name} e ${hero.diff.toLowerCase()} de jucat. bun pe ${hero.lanes.join('/')}, dar ai grija la ${hero.counters?.[0] ?? 'CC'}`,
         `da, ${hero.name} merge in patch-ul asta. doar nu da pick cand au ${hero.counters?.[0] ?? 'tank cu CC'} in echipa`,
@@ -99,6 +174,7 @@ function heroAnswer(hero, text) {
   // mentiune generala
   return {
     who,
+    specific: true,
     text: pick([
       `${hero.name} e ${hero.role.toLowerCase()}, se joaca pe ${hero.lanes.join('/')}. dificultate ${hero.diff.toLowerCase()}`,
       `${hero.name} da bine, dar are probleme cu ${hero.counters?.[0] ?? 'CC-ul'}`,
@@ -244,19 +320,27 @@ export function answerFor(content, { always = false } = {}) {
     return always ? { who: 'bogdan', text: 'zi, ce vrei sa stii? scrie numele unui erou sau un termen din joc' } : null;
   }
 
-  const hero = heroInText(text);
-  if (hero) return heroAnswer(hero, text);
+  const heroes = heroesInText(text);
+  if (heroes.length >= 2 && /\bsau\b|\bvs\b|versus|mai bun|prefer/i.test(text)) {
+    return compareAnswer(heroes[0], heroes[1]);
+  }
+
+  const recommendation = recommendAnswer(text);
+  if (recommendation) return recommendation;
+
+  if (heroes.length) return heroAnswer(heroes[0], text);
 
   const term = glossaryInText(text);
   if (term) {
     return {
       who: pick(['bogdan', 'ale', 'razvan']),
+      specific: true,
       text: `**${term}** = ${GLOSSARY[term]}`,
     };
   }
 
   for (const rule of RULES) {
-    if (rule.test.test(text)) return { who: pick(rule.who), text: pick(rule.replies) };
+    if (rule.test.test(text)) return { who: pick(rule.who), specific: true, text: pick(rule.replies) };
   }
 
   // intrebare generala, fara subiect recunoscut

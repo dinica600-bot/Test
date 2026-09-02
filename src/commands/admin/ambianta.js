@@ -4,6 +4,7 @@ import { settings, db } from '../../lib/db.js';
 import { PERSONAS, playConversation, pickScene, removeWebhooks } from '../../lib/personas.js';
 import { getChannel } from '../../lib/guildMap.js';
 import { COLORS } from '../../config/config.js';
+import { aiEnabled } from '../../lib/aiBrain.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -117,6 +118,12 @@ export default {
             { name: 'Canal', value: settings.get(gid, 'ambiance.channel') ? `<#${settings.get(gid, 'ambiance.channel')}>` : '`general`', inline: true },
             { name: 'Interval', value: `${settings.get(gid, 'ambiance.minMinutes', 45)}-${settings.get(gid, 'ambiance.maxMinutes', 180)} min`, inline: true },
             { name: 'Răspund în chat', value: settings.get(gid, 'ambiance.reply', true) === false ? '🔴 nu' : '🟢 da', inline: true },
+            {
+              name: '🧠 Creier',
+              value: aiEnabled()
+                ? `reguli + **AI** (${process.env.AI_MODEL || 'claude-opus-5'})`
+                : 'doar reguli — pune `ANTHROPIC_API_KEY` în `.env` pentru răspunsuri AI',
+            },
             { name: 'Următoarea', value: on && next > Date.now() ? `<t:${Math.floor(next / 1000)}:R>` : '—' },
           ),
       ],

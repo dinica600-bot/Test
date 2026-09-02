@@ -298,7 +298,7 @@ Emblemele apar automat pe fișa de jucător (`/profil vezi`) — la rank și ca 
 
 Pe lângă cei 125 de eroi, știu și **31 de termeni din joc** explicați pe românește — gank, split push, kite, CC, lord, turtle, retribution, savage, emblemă, meta și restul jargonului care blochează orice începător.
 
-**Personajele citesc chatul și răspund.** Nu e AI plătit — recunosc eroii din baza de date și cuvintele-cheie, apoi răspund cu informații reale:
+**Personajele citesc chatul și răspund.** Recunosc eroii din baza de date, compară doi eroi, recomandă eroi pe lane, explică termeni — și răspund cu informații reale, nu inventate:
 
 > **tu:** ce iau contra lancelot?
 > **Răzvan:** Khufra, Franco, Chou il incurca cel mai tare. plus vision, ca jumatate din problema e ca nu vezi de unde vine
@@ -307,6 +307,22 @@ Pe lângă cei 125 de eroi, știu și **31 de termeni din joc** explicați pe ro
 > **Bogdan:** pe Hylos incepe cu Tough/Warrior Boots → Dominance Ice → Athena's Shield. emblema: Tank
 
 Cine răspunde depinde de subiect: Bogdan la tank-uri și sfaturi, Ale la mage, Denisa la marksman, Răzvan la jungle și fighteri. La întrebări răspund aproape mereu, la afirmații rar, și cel mult o dată pe minut ca să nu sufoce discuția. Din când în când pun și ele întrebări în chat. Se opresc cu `/ambianta raspunsuri activ:False`.
+
+### Două creiere: reguli (gratis) și AI (opțional)
+
+**Implicit, fără nicio cheie**, personajele merg pe reguli: recunosc cei 125 de eroi, cei 31 de termeni, compară („fanny sau ling?"), recomandă („ce erou să joc pe mid?"). Răspunsurile sunt exacte pentru că vin din baza de date, nu dintr-un model.
+
+**Opțional**, pui o cheie Anthropic în `.env` și întrebările pe care regulile *nu* le prind exact ajung la Claude, care răspunde în numele personajului:
+
+```env
+ANTHROPIC_API_KEY=sk-ant-...
+AI_MODEL=claude-opus-5
+AI_MAX_PER_HOUR=40
+```
+
+Ordinea contează: **regulile răspund primele** la orice întrebare despre un erou sau un termen — sunt corecte și gratuite. AI-ul intră doar când subiectul nu e recunoscut. Datele despre eroul menționat sunt trimise modelului ca sursă, ca răspunsul să fie ancorat în baza noastră.
+
+Costă ~0,5 cenți pe răspuns (≈1 dolar la 200 de răspunsuri), iar `AI_MAX_PER_HOUR` e plasa de siguranță pentru buget. Dacă cheia lipsește, e greșită sau API-ul cade, botul revine automat pe reguli — nimic nu se strică.
 
 > Discord marchează automat mesajele trimise prin webhook cu eticheta **APP** — personajele nu pot arăta ca membri reali, și nici nu asta e scopul. Sunt pentru atmosferă, nu ca să pară serverul mai populat decât e.
 

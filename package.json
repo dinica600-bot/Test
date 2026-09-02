@@ -26,6 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "discord.js": "^14.16.3",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "@anthropic-ai/sdk": "^0.71.0"
   }
 }

@@ -5,6 +5,7 @@ import { db, settings } from '../lib/db.js';
 import { getChannel } from '../lib/guildMap.js';
 import { answerFor, maybeFollowUp, isQuestion } from '../lib/personaBrain.js';
 import { sendAs } from '../lib/personas.js';
+import { aiAnswer, aiEnabled } from '../lib/aiBrain.js';
 
 /** Ultimul raspuns dat de personaje, pe canal — ca sa nu vorbeasca peste tot. */
 const lastReply = new Map();
@@ -38,6 +39,13 @@ async function personaReply(message) {
 
   const answer = answerFor(message.content, { always: alwaysAnswer });
   if (!answer) return;
+
+  // Regulile dau raspunsuri exacte pentru eroi si termeni — alea raman,
+  // sunt corecte si gratuite. Doar cand nu prind subiectul intrebam AI-ul.
+  if (!answer.specific && aiEnabled()) {
+    const smart = await aiAnswer(message.content, answer.who);
+    if (smart) answer.text = smart;
+  }
   // la afirmatii raspund doar din cand in cand (nu si in canalul de ajutor)
   if (!alwaysAnswer && !isQuestion(message.content) && Math.random() > 0.35) return;
 
