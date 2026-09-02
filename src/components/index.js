@@ -14,6 +14,7 @@ import * as poll from './poll.js';
 import * as suggestion from './suggestion.js';
 import * as draft from './draft.js';
 import { handleProfileVerify } from './profileVerify.js';
+import { handlePingConfig } from './configPings.js';
 
 export async function handleComponent(interaction) {
   const [namespace, action] = interaction.customId.split(':');
@@ -53,6 +54,9 @@ export async function handleComponent(interaction) {
 
       case 'suggest':
         return await suggestion.handleSuggestion(interaction);
+
+      case 'cfgping':
+        return await handlePingConfig(interaction);
 
       case 'pverify':
         return await handleProfileVerify(interaction);

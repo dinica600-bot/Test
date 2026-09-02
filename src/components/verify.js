@@ -5,6 +5,7 @@ import { RULES } from '../config/blueprint.js';
 import { COLORS, config } from '../config/config.js';
 import { log } from '../lib/logger.js';
 import { withBanner } from '../lib/assets.js';
+import { giveAutoPings } from './configPings.js';
 
 export function verifyPanel() {
   const embed = embeds
@@ -59,8 +60,12 @@ export async function handleVerify(interaction) {
   } catch {
     return fail(interaction, 'Nu am putut sa-ti dau rolul. Rolul botului trebuie sa fie mai sus decat rolul de membru.');
   }
+  const pings = await giveAutoPings(interaction.member);
+
   await log(interaction.guild, 'join', embeds.custom(COLORS.success)
     .setTitle('✅ Membru verificat')
     .setDescription(`${interaction.user} \`${interaction.user.id}\``));
-  return ok(interaction, 'Verificat! Ai acces la tot serverul. Treci prin `🎭︱self-roles` si alege-ti lane-ul. 🩸');
+  return ok(interaction,
+    'Verificat! Ai acces la tot serverul. Treci prin `🎭︱self-roles` si alege-ti lane-ul. 🩸'
+    + (pings ? `\n\nTi-am dat si **${pings}** roluri de notificare — le poti scoate oricand din self-roles.` : ''));
 }

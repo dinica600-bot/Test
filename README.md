@@ -140,7 +140,7 @@ mută rolul botului sus de tot, ia-ți rolul `🩸 Owner`, verifică-te în `✅
 | Sistem | Cum funcționează |
 |---|---|
 | **Verificare** | Buton în `✅︱verificare` → primești `💠 Membru` → se deschide tot serverul. Ține boții și trolii afară. |
-| **Self-roles** | Trei meniuri: lane (multiplu), rank (unic, se schimbă automat), notificări. |
+| **Self-roles** | Trei meniuri: lane (multiplu), rank (unic, se schimbă automat), notificări. Cu `/config notificari` alegi ce roluri de notificare se dau **automat** la verificare, ca membrii să nu mai bifeze nimic — plus un buton care le dă și celor deja pe server. |
 | **Tickete** | Meniu cu 6 motive → canal privat cu staff-ul, buton de preluare, închidere cu **transcript** trimis în logs și în DM. |
 | **Recrutare** | Formular (modal) cu 5 întrebări → aplicația ajunge în `📥︱aplicații` cu butoane **Acceptă / Academy / Respinge**, care dau rolul și dau DM candidatului. |
 | **Scrim** | `/scrim creeaza` postează un anunț cu butoane **Joc / Rezervă / Nu pot** — line-up-ul se completează singur, 5 sloturi + rezerve. |

@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, MessageFlags } f
 import { embeds } from '../../lib/embeds.js';
 import { settings } from '../../lib/db.js';
 import { COLORS } from '../../config/config.js';
+import { pingConfigPanel, autoPingKeys } from '../../components/configPings.js';
 
 const LOG_TYPES = [
   { name: 'Intrări / ieșiri', value: 'join' },
@@ -49,6 +50,9 @@ export default {
       .addBooleanOption((o) => o.setName('activ').setDescription('Pornește/oprește XP-ul'))
       .addBooleanOption((o) => o.setName('anunturi').setDescription('Anunță level-up în chat')))
     .addSubcommand((s) => s
+      .setName('notificari')
+      .setDescription('Ce roluri de notificare primesc membrii automat'))
+    .addSubcommand((s) => s
       .setName('autorole')
       .setDescription('Rol dat automat la intrare (lasă gol ca să-l ștergi)')
       .addRoleOption((o) => o.setName('rol').setDescription('Rolul'))),
@@ -82,11 +86,20 @@ export default {
                 inline: true,
               },
               { name: '🎭 Autorole', value: all.autorole ? `<@&${all.autorole}>` : '`nesetat`', inline: true },
+              {
+                name: '🔔 Notificări automate',
+                value: autoPingKeys(gid).length ? `**${autoPingKeys(gid).length}** roluri — vezi \`/config notificari\`` : '`niciunul`',
+                inline: true,
+              },
               { name: '🧱 Setup rulat', value: all.setupDoneAt ? `<t:${Math.floor(all.setupDoneAt / 1000)}:R>` : '`niciodată`', inline: true },
             ),
         ],
         flags: MessageFlags.Ephemeral,
       });
+    }
+
+    if (sub === 'notificari') {
+      return interaction.reply(pingConfigPanel(interaction.guild));
     }
 
     if (sub === 'log') {

@@ -5,6 +5,7 @@ import { settings } from '../lib/db.js';
 import { log } from '../lib/logger.js';
 import { COLORS, config } from '../config/config.js';
 import { withBanner } from '../lib/assets.js';
+import { giveAutoPings } from '../components/configPings.js';
 
 export default {
   name: Events.GuildMemberAdd,
@@ -20,6 +21,8 @@ export default {
       if (autoKey) {
         const role = guild.roles.cache.get(autoKey) ?? getRole(guild, autoKey);
         if (role) await member.roles.add(role, 'Autorole').catch(() => {});
+        // fara verificare, notificarile se dau chiar la intrare
+        await giveAutoPings(member).catch(() => {});
       }
     }
 
