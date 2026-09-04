@@ -154,6 +154,58 @@ le legi — cele din `pkg` sunt construite cu clang/`libc++`.
 In practica asta inseamna ca **clang e destinatia corecta**, nu gcc: te aliniezi
 cu restul sistemului. gcc-ul nou e doar treapta intermediara.
 
+#### Simptomul: „compileaza, se leaga, dar serverul nu porneste"
+
+Cand in acelasi proces ajung **ambele** biblioteci standard, ai doi alocatori si
+doua mecanisme de exceptii. Crapa la prima alocare sau exceptie care trece
+granita — de multe ori inainte sa scrie ceva util in `syserr`.
+
+**Diagnostic, in 10 secunde:**
+```sh
+ldd game | grep -E 'libstdc\+\+|libc\+\+'
+```
+Daca apar **amandoua**, asta e problema. Nu cauta in alta parte.
+Dupa reparare trebuie sa ramana doar `libc++.so.1` (plus `libcxxrt.so.1`).
+
+**Cauzele, in ordinea probabilitatii:**
+
+1. **`-lstdc++` scris explicit in Makefile-uri.** Cauza numarul unu intr-o sursa
+   de Metin2: linia e acolo din era gcc. Clang leaga `libc++` singur, iar
+   `-lstdc++` il aduce si pe celalalt langa.
+   ```sh
+   grep -rn 'stdc++' --include=Makefile* --include=*.mk .
+   ```
+   Verifica si `-L` catre directoare de gcc (`/usr/local/lib/gcc*`).
+
+2. **Obiecte `.o` ramase de la compilarea veche.** `gmake clean` trebuie facut pe
+   **fiecare** librarie, nu doar pe `game`. Verificare directa pe obiecte:
+   ```sh
+   nm -A *.o | grep -q 'St3__1'                  && echo "obiecte clang/libc++"
+   nm -A *.o | grep -qE '_ZNSs|_ZNSt7__cxx11'    && echo "obiecte gcc/libstdc++"
+   ```
+   Daca apar amandoua in acelasi build, acolo e problema.
+   (Simbolurile `libc++` contin `St3__1` — namespace-ul intern `std::__1`;
+   cele `libstdc++` apar ca `_ZNSs` sau `_ZNSt7__cxx11`.)
+
+3. **Librarii terte precompilate**, livrate ca `.a`/`.so` in pachet si construite
+   cu gcc acum ani. Gaseste care dintre ele trage `libstdc++`:
+   ```sh
+   for f in $(ldd game | awk '{print $3}'); do
+     readelf -d "$f" 2>/dev/null | grep -q stdc++ && echo "$f"
+   done
+   ```
+   Solutie: reconstruieste-le din sursa cu clang, sau instaleaza-le din `pkg`
+   (pachetele oficiale sunt construite cu clang/`libc++`).
+
+4. **Pachetele de compatibilitate** (`compat9x` si celelalte) pun un
+   `libstdc++.so.6` vechi in sistem. Util pentru binarele vechi, dar poate fi
+   gasit primul de linkerul dinamic la binarul nou.
+
+**Ce restrange panica:** trebuie recompilat doar codul **C++** — toate
+librariile Metin2 si dependentele C++ pe care le legi. `libmysqlclient`, openssl
+si celelalte biblioteci C nu au ABI de C++ si nu conteaza cu ce au fost
+construite.
+
 ### B3. Erorile pe care le vei intalni, si ce inseamna
 
 | Eroare | Cauza | Rezolvare |
