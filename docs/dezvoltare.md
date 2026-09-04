@@ -169,6 +169,35 @@ Indiferent de varianta aleasa: **un singur loc de unde se editeaza**, si restul
 generat din el. Doua locuri editabile manual inseamna ca se vor desincroniza — nu
 daca, ci cand.
 
+### De ce esueaza trecerea pe SQL (capcana clasica)
+
+Simptomul: creezi tabelele, le umpli corect, si **serverul citeste tot din
+fisiere**. Sau nu gasesti fisierele pe care ar trebui sa le convertesti.
+
+Cauza: un client de baza de date (Navicat, phpMyAdmin, orice) nu schimba ce
+citeste serverul. **Binarul `db` citeste de acolo de unde a fost compilat sa
+citeasca.** Tabelele perfecte dintr-o baza pe care nimeni nu o interogheaza nu
+fac nimic.
+
+Afla intai ce citeste sursa, nu ce tabele exista:
+```sh
+grep -rn "item_proto\|mob_proto" --include=*.cpp --include=*.h .
+grep -rn "ReadItemProto\|ReadMobProto\|ProtoReader" .
+```
+
+Rezultatul te pune intr-una din trei situatii:
+
+1. **Sursa are deja calea de citire din DB**, controlata de un flag de
+   configurare → e o linie de config, si gata.
+2. **Sursa nu are calea aia deloc** → nu e task de baza de date, e **modificare
+   de sursa** plus recompilare. Niciun ORM si niciun client de DB nu tine loc.
+3. **Sursa citeste fisiere binare** generate dintr-un `.txt` cu o unealta de
+   dump → fisierul text pe care il vezi nu e ce citeste serverul, e intrarea
+   pentru unealta. Cauta unealta.
+
+Verifica asta **inainte** sa incepi conversia. Altfel poti pierde zile pe o
+migrare care nu avea cum sa functioneze.
+
 ### Trecerea txt → SQL
 
 Se poate, si e adesea mai comod (editare, cautare, script-uri). Dar:
@@ -193,6 +222,45 @@ Se poate, si e adesea mai comod (editare, cautare, script-uri). Dar:
 ---
 
 ## 5. Traduceri
+
+### Traducerea proto-urilor — cum se face fara sa corupi datele
+
+`item_proto` si `mob_proto` sunt **tabele separate prin tab-uri**: vnum, type,
+subtype, gender, class, level, price, flag-uri, bonusuri — zeci de coloane. Din
+toate, **o singura coloana e text citibil de om.** Restul sunt valori care nu se
+traduc niciodata.
+
+De aici, doua reguli:
+
+**1. Cel mai probabil nu proto-ul trebuie tradus.** In majoritatea pachetelor,
+numele afisat in joc vine din fisierele de nume (`item_names.txt`,
+`mob_names.txt` sau echivalent) — doua coloane, vnum si nume. Sunt de zeci de ori
+mai mici si mai simple decat proto-ul. **Verifica intai de unde ia clientul
+numele** (Regula #1) inainte sa te apuci de fisierul mare.
+
+**2. Nu traduce manual — scripteaza.** La mii de randuri, orice editare
+manuala corupe tacut coloane: un editor care transforma tab-uri in spatii, o
+cautare-inlocuire care prinde cuvantul si in alta coloana. Nu vezi unde s-a
+rupt, si serverul porneste cu date gresite.
+
+Metoda:
+1. Parsezi fisierul pe coloane (tab ca separator, strict).
+2. Extragi **valorile unice** din coloana de nume — sunt mult mai putine decat
+   randurile, se repeta.
+3. Traduci lista aia (mica, verificabila, consecventa).
+4. Mapezi inapoi programatic si rescrii fisierul, **cu toate celelalte coloane
+   neatinse, byte cu byte**.
+5. Verifici: acelasi numar de randuri, acelasi numar de coloane pe fiecare rand,
+   si un `diff` care arata modificari **doar** in coloana de nume.
+
+**Daca proto-urile sunt in SQL, traducerea devine banala:** o tabela de traduceri
+(vnum → nume) si un `UPDATE` cu join. Repetabil, verificabil, si daca ai gresit
+rulezi din nou. De aceea ordinea corecta e **intai migrarea pe SQL, apoi
+traducerea** — nu invers.
+
+**Limba originala:** Metin2 e joc coreean, deci textul original e de obicei
+coreean; multe pachete circula insa cu locale germana sau turceasca, in functie
+de originea lor. Verifica, nu presupune — de asta depinde si codificarea.
 
 ### Unde stau textele
 
