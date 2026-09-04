@@ -33,6 +33,38 @@ fata de orice tutorial.
   cineva care nu a vazut pachetul — nu adevaruri.
 - Cand nu stii, **spune ca nu stii** si verifica. Nu inventa raspunsul plauzibil.
 
+## REGULA #2 — inspecteaza intai, modifica dupa
+
+**Pentru orice task, oricat de simplu pare**, te uiti intai in `svfiles` /
+`sursa` la ce e relevant, si abia apoi modifici:
+
+1. Ce fel de task e? (date / quest / sursa server / sursa client / python client / DB / sistem)
+2. Unde traieste **in pachetul asta**? Cauta efectiv — retete de `grep`/`find` in
+   `docs/dezvoltare.md` §0.
+3. Citeste ce ai gasit: fisierul si codul care il foloseste.
+4. Spune ce ai gasit si ce vei schimba.
+5. Abia apoi modifica.
+
+Costa cateva minute. Ghicitul costa ore de depanare si un restart ratat.
+
+## Ce trebuie sa stii sa faci
+
+| Capabilitate | Document |
+|---|---|
+| Gasit orice in pachet | `docs/dezvoltare.md` §0 |
+| Implementat orice cerere — arme, item-e, sisteme | `docs/dezvoltare.md` §2–3 |
+| **Creat sisteme noi de la zero**, moderne si functionale | `docs/dezvoltare.md` §1–2 |
+| `item_proto` / `mob_proto` — editat, generat, **trecut pe SQL** | `docs/dezvoltare.md` §4 |
+| Tradus server si client (atentie la codificare!) | `docs/dezvoltare.md` §5 |
+| **Update FreeBSD** vechi → nou | `docs/migrare.md` A |
+| **Portat sursa: gcc vechi → gcc nou → clang** | `docs/migrare.md` B |
+| Backdoor-uri si anticheat | `docs/securitate.md` |
+| Masurat si optimizat | `docs/optimizare.md` |
+| Documentare externa, in siguranta | `docs/resurse.md` |
+
+Ce nu stii, **inveti inainte sa faci**. Ce e o idee proasta tehnic, **spui**, cu
+motiv si alternativa.
+
 ## Ordinea de lucru
 
 | Faza | Ce | Document |
@@ -41,8 +73,9 @@ fata de orice tutorial.
 | 1 | Documentare pe pachetul asta | `docs/resurse.md` |
 | 2 | Baseline in git (starea originala) | — |
 | 3 | **Audit de securitate / backdoor-uri** | `docs/securitate.md` A |
+| 3bis | Migrare FreeBSD / compilator, daca e cazul | `docs/migrare.md` |
 | 4 | Wishlist si plan, aprobat de utilizator | `docs/wishlist.md` |
-| 5 | Implementare | `docs/brief.md` |
+| 5 | Implementare | `docs/brief.md`, `docs/dezvoltare.md` |
 | 6 | Compilare pe FreeBSD | `docs/brief.md` |
 | 7 | Deploy si verificare | `docs/brief.md` |
 | 8 | Hardening, anticheat, optimizare | `docs/securitate.md` B–D, `docs/optimizare.md` |
@@ -62,8 +95,11 @@ fata de orice tutorial.
    import SQL pe productie).
 7. **Nu declara nimic gata** pana n-ai vazut serverul pornit, `syserr` curat si
    modificarea functionand in joc.
-8. **Codul de pe forumuri e cod nesigur.** Asa intra backdoor-urile. Se citeste
-   linie cu linie inainte sa atinga serverul, sau nu se foloseste.
+8. **Codul de pe forumuri e cod nesigur** — inclusiv cel din descrieri de
+   videoclipuri. Se citeste linie cu linie inainte sa atinga serverul, sau nu se
+   foloseste.
+9. **Migrarea de sistem si cea de compilator sunt doua lucruri separate**, facute
+   pe rand, niciodata pe productie.
 
 ## Detalii tehnice de retinut
 
@@ -79,6 +115,14 @@ fata de orice tutorial.
   tinute sincronizate.
 - Quest-urile se compileaza cu `qc` (cere Python 2). **Citeste output-ul** —
   serverul porneste linistit cu un quest rupt.
+- Structurile de pachete trebuie sa fie **identice byte cu byte** intre server si
+  client. Antetele de pachete se aleg din valori libere, nu la intamplare.
+- La portare pe clang: toate obiectele si bibliotecile C++ trebuie sa foloseasca
+  **aceeasi biblioteca standard** (clang = `libc++`, gcc din pkg = `libstdc++`).
+  Amestecul da erori de link bizare si crash-uri.
+- Fisierele de locale au o **codificare mostenita**, nu UTF-8. Conversia oarba
+  rupe afisarea in client. Verifica si daca fontul are diacriticele romanesti,
+  **inainte** sa traduci mii de linii.
 
 ## C++
 

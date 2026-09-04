@@ -26,6 +26,53 @@ Comunitatea turceasca (TurkMMO) si sectiunile de Metin2 de pe elitepvpers au si
 ele material, dar bariera de limba si calitatea neuniforma le fac surse
 secundare.
 
+## Video
+
+Exista tutoriale video (YouTube, in special in turca, germana si poloneza).
+Foloseste-le pentru **proceduri**: cum se impacheteaza un client, cum se
+configureaza o unealta, cum arata un flux de lucru. Sunt slabe pentru **cod** —
+nu poti verifica ce ruleaza, nu poti cauta in ele, si nu vezi contextul.
+
+Regula ramane: un video care ofera „sistemul X gata facut, link in descriere"
+este exact canalul prin care circula backdoor-urile. Codul din descriere trece
+prin `docs/securitate.md` ca oricare altul, sau nu se foloseste.
+
+## Cod public de citit
+
+Cel mai bun material de invatare nu sunt tutorialele, ci **cod real**:
+
+- [Old Metin2 Project](https://git.old-metin2.com/metin2/server) — port
+  open-source, cu istoric de commit-uri. Vezi cum e structurat serverul si, mai
+  ales, **ce s-a reparat si de ce**.
+- Fork-uri publice de sursa pe GitHub — cauta sisteme dupa nume si compara cu
+  implementarea din pachetul tau.
+
+Citit, nu copiat. Diferenta e esentiala.
+
+## Documentatie care nu e despre Metin2
+
+Pentru partea de sistem, sursele oficiale bat orice forum:
+
+- [FreeBSD Handbook](https://docs.freebsd.org/en/books/handbook/) — upgrade-uri,
+  `pf`, `pkg`, securitate
+- Documentatia MySQL/MariaDB pentru versiunea ta — upgrade si tuning
+- Documentatia clang pentru diagnosticele pe care le intalnesti la portare
+
+Cand ai o eroare de compilare sau de sistem, documentatia oficiala iti da
+raspunsul corect mai repede decat un topic de forum din 2016 despre alta versiune.
+
+## Cum inveti eficient
+
+1. Intalnesti ceva ce nu intelegi in **codul tau**.
+2. Cauti exact acel lucru (numele fisierului, mesajul de eroare, numele
+   sistemului), nu subiectul in general.
+3. Citesti doua-trei surse, nu una.
+4. **Verifici in codul tau** ca se aplica.
+5. Notezi ce ai aflat in `docs/cunostinte.md`, ca sa nu recauti peste o luna.
+
+Cautarile generice („cum fac server de Metin2") iti dau tutoriale pentru alte
+pachete si te fac sa presupui lucruri false despre al tau. Cauta specific.
+
 ## Ce sa cauti, concret
 
 Nu cauta „cum fac server de Metin2". Cauta lucruri specifice pachetului tau, pe

@@ -15,8 +15,8 @@ conf/           CONFIG-uri per canal/core, conf.txt, my.cnf
 sql/            structura DB + modificarile noastre (nu dump-uri complete)
 client/         root (.py), uiscript, locale_ro — partea de client
 tools/          script-uri ajutatoare (deploy, build, dump_proto, etc.)
-docs/           brief.md, inventar.md, resurse.md, securitate.md, optimizare.md,
-                wishlist.md, schimbari.md
+docs/           brief.md, inventar.md, resurse.md, dezvoltare.md, migrare.md,
+                securitate.md, optimizare.md, wishlist.md, schimbari.md
 ```
 
 Structura se ajusteaza dupa cum arata efectiv arhiva ta — nu invers.
@@ -32,6 +32,8 @@ utilizatorului): `CLAUDE.md` se incarca automat, apoi **citeste `docs/brief.md`*
 | `docs/brief.md` | planul complet, viziunea, principiile de lucru |
 | `docs/inventar.md` | checklist Faza 0 — ce avem efectiv, verificat nu presupus |
 | `docs/resurse.md` | unde se documenteaza lumea, si de ce codul de pe forumuri e nesigur |
+| `docs/dezvoltare.md` | sisteme noi, arme, proto-uri (inclusiv trecerea pe SQL), traduceri |
+| `docs/migrare.md` | update de FreeBSD, portare gcc → clang |
 | `docs/securitate.md` | vanatoare de backdoor-uri, hardening, anticheat |
 | `docs/optimizare.md` | cum se masoara si ce merita optimizat |
 | `docs/wishlist.md` | ce vrea utilizatorul modificat |
@@ -39,6 +41,9 @@ utilizatorului): `CLAUDE.md` se incarca automat, apoi **citeste `docs/brief.md`*
 
 **Regula #1: zero presupuneri.** Caile si numele de fisiere din documentatia asta
 sunt ipoteze de verificat pe pachetul real, nu adevaruri.
+
+**Regula #2: pentru orice task, inspectezi fisierele relevante inainte sa
+modifici ceva.**
 
 ## Cum lucram
 

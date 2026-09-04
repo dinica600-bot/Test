@@ -72,24 +72,43 @@ Deci:
 - **Cand nu stii, spune ca nu stii** si du-te sa verifici. Nu inventa un raspuns
   plauzibil — intr-un cod vechi de 15 ani, raspunsul plauzibil e de obicei gresit.
 
-### 3.2. Intelege inainte sa modifici
+### 3.2. Pentru ORICE task: inspecteaza intai, modifica dupa
+
+Nu incepe nicio modificare inainte sa te uiti in `svfiles` / `sursa` la ce e
+relevant pentru taskul respectiv. Nici macar la cele care par banale.
+
+Procedura, de fiecare data:
+
+1. **Ce fel de task e?** date / quest / sursa server / sursa client / client
+   python / DB / sistem
+2. **Unde traieste in pachetul asta?** Cauta efectiv — retetele de `grep` si
+   `find` sunt in `docs/dezvoltare.md`, sectiunea 0.
+3. **Citeste** ce ai gasit: fisierul si codul care il foloseste.
+4. **Spune ce ai gasit si ce vei schimba**, inainte sa schimbi.
+5. Abia apoi modifica.
+
+Costul e de cateva minute. Alternativa — modificarea ghicita — costa ore de
+depanare pe un server care nu porneste, plus un restart ratat. Utilizatorul a
+cerut explicit sa nu pierdem timpul asa.
+
+### 3.3. Intelege inainte sa modifici
 
 Nu atinge cod pe care nu l-ai citit. Serverfiles-urile de Metin2 au dependinte
 implicite peste tot: o schimbare intr-un header poate afecta sisteme care par
 fara legatura. Inainte de orice modificare, raspunde la: *ce face codul asta acum,
 cine il apeleaza, ce se strica daca il schimb?*
 
-### 3.3. O modificare pe rand, verificata
+### 3.4. O modificare pe rand, verificata
 
 Nu aduna zece schimbari si apoi restart. Cand crapa, nu mai stii care a fost.
 Commit separat pentru fiecare, cu explicatie.
 
-### 3.4. Nu declara nimic gata pe baza de speranta
+### 3.5. Nu declara nimic gata pe baza de speranta
 
 "Gata" inseamna: serverul porneste, `syserr` e curat, si ai vazut modificarea
 functionand efectiv in joc. Nu inainte.
 
-### 3.5. Despre C++
+### 3.6. Despre C++
 
 Codul e vechi, in stil C++98/03: pointeri bruti, gestiune manuala de memorie,
 structuri de pachete cu aliniere fixa, buffere de dimensiune fixa.
@@ -101,6 +120,31 @@ structuri de pachete cu aliniere fixa, buffere de dimensiune fixa.
 - Atentie la structurile de pachete: aliniere, dimensiuni, tipuri. O schimbare
   acolo rupe compatibilitatea cu clientul.
 - Compileaza des. Nu scrie 300 de linii si apoi incerci.
+
+---
+
+## 3bis. Ce trebuie sa stii sa faci
+
+Utilizatorul se asteapta sa poti duce oricare din lucrurile astea, corect si
+fara sa ghicesti. Fiecare are documentul lui:
+
+| Capabilitate | Unde e detaliat |
+|---|---|
+| Inspectat pachetul si gasit orice in el | `docs/dezvoltare.md` §0 |
+| Implementat orice cere utilizatorul — arme, item-e, sisteme | `docs/dezvoltare.md` §2–3 |
+| **Creat sisteme noi de la zero**, moderne si functionale | `docs/dezvoltare.md` §1–2 |
+| `item_proto` / `mob_proto`: editat, generat, **trecut pe SQL** | `docs/dezvoltare.md` §4 |
+| Tradus continutul serverului si al clientului | `docs/dezvoltare.md` §5 |
+| **Update de FreeBSD** — de pe versiune veche pe una noua | `docs/migrare.md` A |
+| **Portat sursa de pe gcc vechi pe gcc nou si pe clang** | `docs/migrare.md` B |
+| Gasit si eliminat backdoor-uri; anticheat | `docs/securitate.md` |
+| Masurat si optimizat | `docs/optimizare.md` |
+| Documentat-te pe surse externe, in siguranta | `docs/resurse.md` |
+
+Ce nu stii inca, **inveti inainte sa faci** — vezi Faza 1 si `docs/resurse.md`.
+Ce nu se poate face sau e o idee proasta tehnic, **spui**, cu motivul si cu
+alternativa. Nu incepe un lucru mare pe baza unei presupuneri despre cum
+functioneaza pachetul.
 
 ---
 
@@ -214,6 +258,24 @@ schimba toate parolele livrate.
 
 ---
 
+### Faza 3bis — Migrare (daca e cazul)
+
+Daca sistemul e pe un FreeBSD vechi sau sursa e legata de un gcc vechi, migrarea
+se face **acum**, inainte sa se acumuleze modificari proprii — altfel portezi si
+sistemul, si schimbarile tale, in acelasi timp, si nu mai stii ce a stricat ce.
+
+`docs/migrare.md`, integral. Pe scurt:
+- sistemul si compilatorul sunt **doua migrari separate**, facute pe rand
+- nimic nu se face direct pe productie
+- `gcc vechi → gcc nou → clang`, cu standardul original (`-std=gnu++98`), nu direct
+- toate obiectele si bibliotecile C++ trebuie sa foloseasca **aceeasi biblioteca
+  standard** (clang = `libc++`, gcc din pkg = `libstdc++`) — amestecul da crash-uri
+- pachetele de compatibilitate FreeBSD lasa serverul sa mearga pe sistemul nou cu
+  binarele vechi cat timp portezi sursa
+- i386 → amd64 nu e upgrade, e proiect separat — vezi de ce in document
+
+---
+
 ### Faza 4 — Wishlist si plan
 
 Deschide `docs/wishlist.md`. Daca e goala, completeaz-o cu utilizatorul. Nu
@@ -249,6 +311,11 @@ nu adevaruri:
 | Limite hardcodate (level, etc.) | sursa C++ | **da** | restart |
 | Interfata, texte | client: `uiscript`, `locale_*` | nu | patch client |
 | Logica de client | client: `root/*.py` — **Python 2.7** | nu | patch client |
+
+Pentru sisteme noi, arme, proto-uri si traduceri, procedura completa e in
+**`docs/dezvoltare.md`** — anatomia unui sistem, cum se construieste unul de la
+zero, cum se gestioneaza proto-urile (inclusiv trecerea pe SQL) si cum se traduce
+fara sa strici codificarea caracterelor.
 
 Reguli specifice:
 - **Quest-urile** se compileaza cu `qc` (are nevoie de Python 2). **Citeste
@@ -324,6 +391,9 @@ Checklist-ul dinainte de live e in `docs/securitate.md`, Partea D.
 ## 7. Ce sa NU faci
 
 - Sa nu presupui nimic. (Vezi 3.1. E prima regula din motive intemeiate.)
+- Sa nu modifici nimic inainte sa fi inspectat fisierele relevante. (Vezi 3.2.)
+- Sa nu faci migrare de sistem si de compilator in acelasi timp.
+- Sa nu amesteci obiecte compilate cu `libstdc++` si cu `libc++`.
 - Sa nu copiezi cod de pe forumuri direct pe server.
 - Sa nu modifici direct pe server prin WinSCP fara sa treaca si prin repo.
 - Sa nu compilezi pe Windows si sa urci binarul. Serverul e FreeBSD.
@@ -339,8 +409,9 @@ Checklist-ul dinainte de live e in `docs/securitate.md`, Partea D.
 
 > Am citit brief-ul. Incep cu Faza 0 — inventarul: parcurg efectiv `svfiles` si
 > `sursa` si notez structura reala, unde se editeaza fiecare lucru, si toate
-> versiunile. Am nevoie de acces SSH la VPS pentru versiunea de FreeBSD,
-> arhitectura si compilator. Nu presupun nimic despre pachet pana nu vad.
+> versiunile — inclusiv FreeBSD, arhitectura si compilatorul, de care depinde
+> daca avem de facut o migrare. Am nevoie de acces SSH la VPS pentru partea de
+> server. Nu presupun nimic despre pachet pana nu vad cu ochii mei.
 > Intre timp, spune-mi ce vrei modificat — le trec in `docs/wishlist.md`.
 
 Apoi Faza 0. Punct cu punct, din `docs/inventar.md`.
