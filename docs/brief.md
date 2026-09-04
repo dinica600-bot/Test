@@ -245,6 +245,10 @@ Commit: `Baseline ServerFiles v8 - stare initiala, nemodificata`
 **Inainte ca serverul sa vada primul jucator.** Urmeaza integral
 **`docs/securitate.md`**, Partea A.
 
+Porneste cu `python3 tools/audit.py <cale> -o docs/audit-rezultat.md` — face
+inventarul si scanarea automata dintr-o comanda. E read-only. Raportul lui e
+punct de plecare, nu concluzie.
+
 Pe scurt de ce: serverfiles-urile de Metin2 descind din leak-uri vechi cu
 exploit-uri publice nepatch-uite, iar pachetele redistribuite contin frecvent
 backdoor-uri puse intentionat. Pachetul asta a trecut prin mainile firmei de

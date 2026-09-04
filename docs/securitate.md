@@ -26,7 +26,22 @@ luat, la randul lor, de undeva.
 
 ## Partea A — Vanatoarea de backdoor-uri
 
-Ruleaza toate verificarile de mai jos si **scrie rezultatele** in
+**Porneste cu scriptul**, ca sa nu ratezi nimic si sa ai un punct de plecare:
+
+```sh
+python3 tools/audit.py /cale/catre/pachet -o docs/audit-rezultat.md
+```
+
+Face inventarul (dimensiuni, fisiere-cheie, Makefile-uri, unde apar proto-urile)
+si ruleaza pattern-urile de mai jos peste sursa, quest-uri, PHP si Makefile-uri.
+E read-only: citeste si scrie un raport, nu executa si nu modifica nimic.
+
+**Rezultatul lui nu e o concluzie.** Un raport gol nu inseamna „curat", inseamna
+„nu a prins pattern-urile astea" — un backdoor scris cu grija nu contine niciunul
+din cuvintele cautate. Scriptul iti da lista de locuri de citit; cititul ramane
+al tau.
+
+Apoi ruleaza verificarile de mai jos si **scrie rezultatele** in
 `docs/audit-securitate.md` (creeaza-l). Fiecare rezultat suspect se investigheaza
 pana intelegi ce face codul — nu il stergi orbeste (poti rupe serverul), dar nici
 nu il lasi pentru ca "probabil e ok".

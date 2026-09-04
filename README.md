@@ -14,7 +14,7 @@ share/          locale, data, mob_proto / item_proto, motd, etc.
 conf/           CONFIG-uri per canal/core, conf.txt, my.cnf
 sql/            structura DB + modificarile noastre (nu dump-uri complete)
 client/         root (.py), uiscript, locale_ro — partea de client
-tools/          script-uri ajutatoare (deploy, build, dump_proto, etc.)
+tools/          audit.py (inventar + scanare backdoor-uri), si alte script-uri
 docs/           cerinte.md, brief.md, inventar.md, resurse.md, dezvoltare.md, migrare.md,
                 securitate.md, optimizare.md, wishlist.md, schimbari.md
 ```
