@@ -1,17 +1,44 @@
 # Wishlist — ce vreau modificat la ServerFiles v8
 
-Scrie aici pe puncte. Format liber, dar cu cat e mai concret, cu atat merge mai repede.
+## Obiectivele generale (stabilite de utilizator)
 
-## Exemple de tipuri de cereri
+Astea nu sunt cereri punctuale, ci criteriile dupa care se judeca tot:
 
-- **Rate-uri / balans**: exp, drop, yang, cost upgrade, sansa de imbunatatire.
-- **Sisteme**: activat/dezactivat Bonus Board, Kill Status, offline shop, costume etc.
-- **Quest-uri**: quest nou, modificat sau scos.
-- **Item-uri / mob-uri**: item_proto, mob_proto, bonusuri, drop-uri.
-- **Client**: interfata (uiscript), texte (locale), root .py.
-- **Config server**: nr. de canale, porturi, event-uri, mesaje de sistem.
-- **Sursa (C++)**: limite hardcodate, bug-uri, feature-uri noi.
+- Server **curat** — cod si fisiere in ordine, fara resturi de la impachetare.
+- **Optimizat**, fara lag, si cand sunt jucatori multi.
+- **Modern, dar cu cat mai putine sisteme.** „Old school new school": joc clasic,
+  calitate tehnica de azi. Fiecare sistem nou trebuie sa isi justifice existenta.
+- **Fara erori** — `syserr` curat.
+- **Fara backdoor-uri**, fara exploit-uri deschise, fara dupe.
+- **Cu anticheat** real, server-side.
+- Sa devina un server **popular**.
 
-## Cereri
+Detalii si plan: `docs/brief.md` sectiunea 2, `docs/securitate.md`,
+`docs/optimizare.md`.
 
-<!-- 1. ... -->
+---
+
+## Cereri punctuale
+
+Se completeaza impreuna cu utilizatorul in **Faza 4**. Nu se accepta cereri
+vagi — pentru fiecare trebuie sa stim: **ce** se schimba, **unde** traieste,
+daca cere **recompilare**, daca cere **patch de client**, si daca se poate
+**da inapoi**.
+
+| # | Cerere | Unde | Recompilare | Patch client | Reversibil | Stare |
+|---|---|---|---|---|---|---|
+| | | | | | | |
+
+### Exemple de tipuri de cereri
+
+Rate (exp/drop/yang) • drop-uri • item-e si bonusuri • mobi si spawn •
+quest-uri • sisteme on/off • interfata si texte • limite din sursa • event-uri
+
+### Decizii despre sistemele existente
+
+Ce se pastreaza si ce iese din ce e deja in pachet — se completeaza dupa ce
+tabelul 6 din `docs/inventar.md` e umplut.
+
+| Sistem | Il pastram? | Motiv |
+|---|---|---|
+| | | |

@@ -15,16 +15,30 @@ conf/           CONFIG-uri per canal/core, conf.txt, my.cnf
 sql/            structura DB + modificarile noastre (nu dump-uri complete)
 client/         root (.py), uiscript, locale_ro — partea de client
 tools/          script-uri ajutatoare (deploy, build, dump_proto, etc.)
-docs/           brief.md (planul), inventar.md (ce avem), wishlist.md, schimbari.md
+docs/           brief.md, inventar.md, resurse.md, securitate.md, optimizare.md,
+                wishlist.md, schimbari.md
 ```
 
 Structura se ajusteaza dupa cum arata efectiv arhiva ta — nu invers.
 
 ## Start rapid
 
-Daca deschizi sesiunea asta prima data (mai ales Claude Code pe PC-ul
-utilizatorului): **citeste intai `docs/brief.md`** — contine contextul complet,
-regulile de siguranta si planul pe faze. Apoi `docs/inventar.md` (Faza 0).
+Daca deschizi proiectul prima data (mai ales Claude Code pe PC-ul
+utilizatorului): `CLAUDE.md` se incarca automat, apoi **citeste `docs/brief.md`**
+— context, viziune, principii si planul pe 10 faze.
+
+| Document | Ce contine |
+|---|---|
+| `docs/brief.md` | planul complet, viziunea, principiile de lucru |
+| `docs/inventar.md` | checklist Faza 0 — ce avem efectiv, verificat nu presupus |
+| `docs/resurse.md` | unde se documenteaza lumea, si de ce codul de pe forumuri e nesigur |
+| `docs/securitate.md` | vanatoare de backdoor-uri, hardening, anticheat |
+| `docs/optimizare.md` | cum se masoara si ce merita optimizat |
+| `docs/wishlist.md` | ce vrea utilizatorul modificat |
+| `docs/schimbari.md` | jurnal de modificari cu pasi de rollback |
+
+**Regula #1: zero presupuneri.** Caile si numele de fisiere din documentatia asta
+sunt ipoteze de verificat pe pachetul real, nu adevaruri.
 
 ## Cum lucram
 
