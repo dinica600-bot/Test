@@ -15,10 +15,16 @@ conf/           CONFIG-uri per canal/core, conf.txt, my.cnf
 sql/            structura DB + modificarile noastre (nu dump-uri complete)
 client/         root (.py), uiscript, locale_ro — partea de client
 tools/          script-uri ajutatoare (deploy, build, dump_proto, etc.)
-docs/           notite: ce am schimbat si de ce
+docs/           brief.md (planul), inventar.md (ce avem), wishlist.md, schimbari.md
 ```
 
 Structura se ajusteaza dupa cum arata efectiv arhiva ta — nu invers.
+
+## Start rapid
+
+Daca deschizi sesiunea asta prima data (mai ales Claude Code pe PC-ul
+utilizatorului): **citeste intai `docs/brief.md`** — contine contextul complet,
+regulile de siguranta si planul pe faze. Apoi `docs/inventar.md` (Faza 0).
 
 ## Cum lucram
 
