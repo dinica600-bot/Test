@@ -65,6 +65,9 @@ Costa cateva minute. Ghicitul costa ore de depanare si un restart ratat.
 Ce nu stii, **inveti inainte sa faci**. Ce e o idee proasta tehnic, **spui**, cu
 motiv si alternativa.
 
+**Lista completa a cerintelor utilizatorului: `docs/cerinte.md`.** Foloseste-o
+ca verificare la finalul fiecarei faze — nimic nu se lasa tacut deoparte.
+
 ## Ordinea de lucru
 
 | Faza | Ce | Document |

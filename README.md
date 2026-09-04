@@ -15,7 +15,7 @@ conf/           CONFIG-uri per canal/core, conf.txt, my.cnf
 sql/            structura DB + modificarile noastre (nu dump-uri complete)
 client/         root (.py), uiscript, locale_ro — partea de client
 tools/          script-uri ajutatoare (deploy, build, dump_proto, etc.)
-docs/           brief.md, inventar.md, resurse.md, dezvoltare.md, migrare.md,
+docs/           cerinte.md, brief.md, inventar.md, resurse.md, dezvoltare.md, migrare.md,
                 securitate.md, optimizare.md, wishlist.md, schimbari.md
 ```
 
@@ -29,6 +29,7 @@ utilizatorului): `CLAUDE.md` se incarca automat, apoi **citeste `docs/brief.md`*
 
 | Document | Ce contine |
 |---|---|
+| `docs/cerinte.md` | tot ce a cerut utilizatorul, ca lista de verificare |
 | `docs/brief.md` | planul complet, viziunea, principiile de lucru |
 | `docs/inventar.md` | checklist Faza 0 — ce avem efectiv, verificat nu presupus |
 | `docs/resurse.md` | unde se documenteaza lumea, si de ce codul de pe forumuri e nesigur |
