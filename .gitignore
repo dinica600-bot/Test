@@ -1,0 +1,55 @@
+# ===== Metin2 ServerFiles v8 — ce NU intra in git =====
+
+# Compilate / obiecte
+*.o
+*.a
+*.so
+*.so.*
+*.pyc
+*.pyo
+*.core
+core.*
+.depend
+.libs/
+
+# Loguri & runtime
+*.log
+log/
+logs/
+syserr*
+syslog*
+*.pid
+*.sock
+
+# Arhive mari (trimite-le separat, nu prin git)
+*.tar
+*.tar.gz
+*.tgz
+*.tar.xz
+*.tar.bz2
+*.zip
+*.7z
+*.rar
+*.iso
+*.img
+
+# Pack-uri client (binare mari)
+*.eix
+*.epk
+*.eterpack
+
+# Backup-uri / dump-uri complete de DB
+*.sql.gz
+*.dump
+backup/
+backups/
+hotbackup/
+
+# Editoare / OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
